@@ -613,7 +613,71 @@
 
   .watchlist-export:hover { border-color: var(--gold-dim); color: var(--text); }
 
-  /* SCROLLBAR */
+  /* SIDEBAR INTRO BOX */
+  .sidebar-intro {
+    border: 1px solid rgba(201,168,76,0.25);
+    background: linear-gradient(135deg, rgba(201,168,76,0.06), rgba(155,107,212,0.04));
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .sidebar-intro-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .sidebar-intro p {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 8px;
+  }
+
+  .sidebar-intro p strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .sidebar-cta {
+    display: block;
+    margin-top: 12px;
+    text-align: center;
+    padding: 8px 12px;
+    background: rgba(201,168,76,0.1);
+    border: 1px solid var(--gold-dim);
+    color: var(--gold);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: all 0.15s;
+  }
+
+  .sidebar-cta:hover {
+    background: rgba(201,168,76,0.2);
+    border-color: var(--gold);
+  }
+
+  /* AI BRIEF TEXT FORMATTING */
+  .ai-insight-text p {
+    margin-bottom: 10px;
+    line-height: 1.7;
+  }
+
+  .ai-insight-text strong, .ai-insight-text b {
+    color: var(--gold);
+    font-weight: 500;
+  }
+
+  .ai-insight-text em, .ai-insight-text i {
+    color: var(--text);
+    font-style: italic;
+  }
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: var(--border); }
@@ -671,6 +735,13 @@
 <div class="layout">
   <!-- SIDEBAR -->
   <aside class="sidebar">
+
+    <div class="sidebar-intro">
+      <div class="sidebar-intro-title">◆ Private. Pre-IPO. Exclusive.</div>
+      <p>Every company here is <strong>privately held</strong> — none are publicly traded yet. These are the names institutional investors are watching before they hit the market.</p>
+      <p>Track the ones that matter to you. When they file, you'll already know the story.</p>
+      <a class="sidebar-cta" href="#">Join the Atlas Roundtable →</a>
+    </div>
 
     <div class="sidebar-section">
       <div class="sidebar-label">Search</div>
@@ -1222,7 +1293,16 @@ Frame the analysis around the Atlas 6-Layer AI Pyramid. Specifically: why this c
     const data = await response.json();
     const fullText = data.text || '';
 
-    textEl.innerHTML = fullText;
+    // Convert markdown-style text to readable HTML
+    const formatted = fullText
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      .replace(/\n\n/g, '</p><p>')
+      .replace(/\n/g, '<br>')
+      .replace(/^/, '<p>')
+      .replace(/$/, '</p>');
+
+    textEl.innerHTML = formatted;
     insightCache[selectedId] = fullText;
     btn.textContent = '↺ Regenerate Brief';
     btn.disabled = false;
