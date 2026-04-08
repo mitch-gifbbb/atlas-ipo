@@ -1175,7 +1175,7 @@ function renderTable() {
       <td>${statusBadge(d.status)}</td>
       <td><span class="valuation-text${isMega(d.valuation) ? ' mega' : ''}">${formatVal(d.valuation)}</span></td>
       <td>${signalDots(d.signal)}</td>
-      <td>${d.advanced ? '<span class="advanced-badge">ADVANCED</span>' : '<span style="color:var(--muted);font-size:11px;">—</span>'}</td>
+      <td>${d.advanced ? '<span class="advanced-badge">ADVANCED</span>' : '<span style="color:var(--muted);font-size:11px;font-family:\'IBM Plex Mono\',monospace;letter-spacing:0.5px;">EMERGING</span>'}</td>
       <td>
         <button class="watchlist-btn${watchlist.has(d.id) ? ' saved' : ''}" onclick="toggleWatch(event,${d.id})">
           ${watchlist.has(d.id) ? '★' : '☆'}
