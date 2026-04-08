@@ -1209,6 +1209,9 @@ async function generateInsight() {
 Key facts: Valuation ~${formatVal(d.valuation)}, Status: ${d.status}, Layer: ${layerNames[d.layer]}, Sector: ${d.sector}, Target: ${d.target}.
 
 Frame the analysis around the Atlas 6-Layer AI Pyramid. Specifically: why this company matters within ${layerNames[d.layer]}, what makes it a compelling pre-IPO opportunity, and what the key risk/upside asymmetry is. Be specific and direct. Do NOT use generic AI language. Write like an analyst who has done the research. End with one sentence on what could unlock 2-5x from IPO price.`;
+
+  try {
+    const response = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ prompt })
