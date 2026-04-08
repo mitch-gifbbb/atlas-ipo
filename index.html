@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atlas IPO Vault — 190+ AI Filings</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --gold: #C9A84C;
+    --gold-dim: #8A6B2A;
+    --bg: #0A0A0A;
+    --surface: #111111;
+    --surface2: #181818;
+    --border: #2A2A2A;
+    --text: #E8E4DC;
+    --muted: #6A6560;
+    --accent: #C9A84C;
+    --red: #E05252;
+    --green: #4CAF78;
+    --blue: #5B8BDE;
+    --purple: #9B6BD4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* HEADER */
+  .vault-header {
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    background: rgba(10,10,10,0.97);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+  }
+
+  .vault-logo {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  .vault-logo-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 3px;
+    color: var(--gold);
+  }
+
+  .vault-logo-sub {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .header-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--gold);
+    border: 1px solid var(--gold-dim);
+    padding: 4px 12px;
+    letter-spacing: 1px;
+  }
+
+  .header-stats {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .stat-item {
+    text-align: right;
+  }
+
+  .stat-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: var(--gold);
+    letter-spacing: 1px;
+  }
+
+  .stat-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* LAYOUT */
+  .layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: calc(100vh - 64px);
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    border-right: 1px solid var(--border);
+    padding: 1.5rem;
+    position: sticky;
+    top: 64px;
+    height: calc(100vh - 64px);
+    overflow-y: auto;
+    background: var(--surface);
+  }
+
+  .sidebar-section {
+    margin-bottom: 2rem;
+  }
+
+  .sidebar-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 6px;
+  }
+
+  .search-box {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .search-box:focus { border-color: var(--gold); }
+  .search-box::placeholder { color: var(--muted); }
+
+  .filter-group { margin-bottom: 1rem; }
+
+  .filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin: 3px 3px 3px 0;
+    letter-spacing: 0.5px;
+  }
+
+  .filter-chip:hover { border-color: var(--gold-dim); color: var(--text); }
+
+  .filter-chip.active {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: rgba(201,168,76,0.08);
+  }
+
+  .filter-chip .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+
+  .sort-select {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 7px 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .sort-select option { background: var(--surface); }
+
+  /* MAIN */
+  .main-content {
+    padding: 1.5rem;
+  }
+
+  .results-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .results-count {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .results-count span { color: var(--gold); }
+
+  .view-toggle {
+    display: flex;
+    gap: 4px;
+  }
+
+  .view-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 5px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .view-btn.active { border-color: var(--gold); color: var(--gold); }
+
+  /* TABLE VIEW */
+  .ipo-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .ipo-table th {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  .ipo-table tr.data-row {
+    border-bottom: 1px solid rgba(42,42,42,0.6);
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+
+  .ipo-table tr.data-row:hover {
+    background: rgba(201,168,76,0.04);
+  }
+
+  .ipo-table tr.data-row.selected {
+    background: rgba(201,168,76,0.07);
+    border-bottom: 1px solid var(--gold-dim);
+  }
+
+  .ipo-table td {
+    padding: 10px 12px;
+    vertical-align: middle;
+  }
+
+  .company-name {
+    font-weight: 500;
+    color: var(--text);
+    font-size: 13px;
+  }
+
+  .company-desc {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+    max-width: 260px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* LAYER BADGE */
+  .layer-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    border: 1px solid;
+    white-space: nowrap;
+  }
+
+  .layer-1 { color: #E05252; border-color: rgba(224,82,82,0.4); background: rgba(224,82,82,0.08); }
+  .layer-2 { color: #E8924A; border-color: rgba(232,146,74,0.4); background: rgba(232,146,74,0.08); }
+  .layer-3 { color: #C9A84C; border-color: rgba(201,168,76,0.4); background: rgba(201,168,76,0.08); }
+  .layer-4 { color: #4CAF78; border-color: rgba(76,175,120,0.4); background: rgba(76,175,120,0.08); }
+  .layer-5 { color: #5B8BDE; border-color: rgba(91,139,222,0.4); background: rgba(91,139,222,0.08); }
+  .layer-6 { color: #9B6BD4; border-color: rgba(155,107,212,0.4); background: rgba(155,107,212,0.08); }
+
+  .status-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    padding: 3px 7px;
+    letter-spacing: 0.5px;
+    border: 1px solid;
+    white-space: nowrap;
+  }
+
+  .status-filed { color: #4CAF78; border-color: rgba(76,175,120,0.5); background: rgba(76,175,120,0.08); }
+  .status-confidential { color: #C9A84C; border-color: rgba(201,168,76,0.5); background: rgba(201,168,76,0.08); }
+  .status-shadow { color: #5B8BDE; border-color: rgba(91,139,222,0.5); background: rgba(91,139,222,0.08); }
+  .status-withdrew { color: #E05252; border-color: rgba(224,82,82,0.5); background: rgba(224,82,82,0.08); }
+
+  .valuation-text {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+    white-space: nowrap;
+  }
+
+  .valuation-text.mega { color: var(--gold); }
+
+  .signal-dots {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+  }
+
+  .signal-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+  }
+
+  .signal-dot.lit { background: var(--gold); }
+
+  .watchlist-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .watchlist-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .watchlist-btn.saved { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,0.1); }
+
+  /* DETAIL PANEL */
+  .detail-panel {
+    position: fixed;
+    right: 0;
+    top: 64px;
+    width: 420px;
+    height: calc(100vh - 64px);
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    overflow-y: auto;
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 50;
+  }
+
+  .detail-panel.open { transform: translateX(0); }
+
+  .panel-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--surface);
+    z-index: 2;
+  }
+
+  .panel-close {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    font-size: 16px;
+    float: right;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .panel-close:hover { border-color: var(--gold); color: var(--gold); }
+
+  .panel-company {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 2px;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .panel-meta {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+
+  .panel-body {
+    padding: 1.5rem;
+  }
+
+  .panel-section {
+    margin-bottom: 1.5rem;
+  }
+
+  .panel-section-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .data-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .data-cell {
+    background: var(--surface2);
+    padding: 10px 12px;
+  }
+
+  .data-cell-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .data-cell-val {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .data-cell-val.gold { color: var(--gold); }
+
+  /* AI INSIGHTS */
+  .ai-insight-box {
+    background: linear-gradient(135deg, rgba(201,168,76,0.06), rgba(155,107,212,0.06));
+    border: 1px solid rgba(201,168,76,0.2);
+    padding: 1rem;
+    position: relative;
+  }
+
+  .ai-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .ai-label::before {
+    content: '◆';
+    font-size: 8px;
+  }
+
+  .ai-insight-text {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  .ai-insight-text.loading {
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  .generate-btn {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--gold-dim);
+    color: var(--gold);
+    padding: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 10px;
+    text-transform: uppercase;
+  }
+
+  .generate-btn:hover { background: rgba(201,168,76,0.1); border-color: var(--gold); }
+  .generate-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .ai-streaming {
+    display: inline-block;
+    width: 8px;
+    height: 14px;
+    background: var(--gold);
+    animation: blink 0.7s infinite;
+    margin-left: 2px;
+    vertical-align: text-bottom;
+  }
+
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--muted);
+  }
+
+  .empty-state h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    letter-spacing: 2px;
+    color: var(--border);
+    margin-bottom: 8px;
+  }
+
+  .empty-state p {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+  }
+
+  /* TICKER TAPE */
+  .ticker-tape {
+    background: rgba(201,168,76,0.06);
+    border-bottom: 1px solid rgba(201,168,76,0.15);
+    overflow: hidden;
+    height: 30px;
+    display: flex;
+    align-items: center;
+  }
+
+  .ticker-inner {
+    display: flex;
+    gap: 0;
+    animation: ticker 80s linear infinite;
+    white-space: nowrap;
+  }
+
+  .ticker-item {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    padding: 0 20px;
+    letter-spacing: 0.5px;
+  }
+
+  .ticker-item span { color: var(--gold); }
+
+  @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* WATCHLIST COUNTER */
+  .watchlist-count {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+
+  .watchlist-count span { color: var(--gold); }
+
+  .watchlist-export {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 7px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-top: 8px;
+    text-transform: uppercase;
+  }
+
+  .watchlist-export:hover { border-color: var(--gold-dim); color: var(--text); }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--gold-dim); }
+
+  /* FADE IN */
+  .fade-in { animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* Advanced screen badge */
+  .advanced-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    color: var(--gold);
+    background: rgba(201,168,76,0.1);
+    border: 1px solid rgba(201,168,76,0.3);
+    padding: 2px 6px;
+    letter-spacing: 1px;
+    vertical-align: middle;
+  }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { position: static; height: auto; }
+    .detail-panel { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="vault-header">
+  <div class="vault-logo">
+    <div class="vault-logo-text">ATLAS IPO VAULT</div>
+    <div class="vault-logo-sub">VIP Intelligence • Q2 2026</div>
+  </div>
+  <div class="header-stats">
+    <div class="stat-item">
+      <div class="stat-val" id="total-count">190+</div>
+      <div class="stat-label">Total Filings</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-val" id="watchlist-header-count">0</div>
+      <div class="stat-label">Watchlisted</div>
+    </div>
+    <div class="header-badge">VIP ACCESS</div>
+  </div>
+</header>
+
+<!-- TICKER TAPE -->
+<div class="ticker-tape">
+  <div class="ticker-inner" id="ticker-inner"></div>
+</div>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Search</div>
+      <input type="text" class="search-box" id="search-input" placeholder="Company name, sector...">
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Atlas Layer</div>
+      <div class="filter-group" id="layer-filters">
+        <button class="filter-chip active" data-filter="layer" data-val="all">
+          <span class="dot" style="background:#888"></span> All Layers
+        </button>
+        <button class="filter-chip" data-filter="layer" data-val="1">
+          <span class="dot" style="background:#E05252"></span> L1 · Energy
+        </button>
+        <button class="filter-chip" data-filter="layer" data-val="2">
+          <span class="dot" style="background:#E8924A"></span> L2 · Chips
+        </button>
+        <button class="filter-chip" data-filter="layer" data-val="3">
+          <span class="dot" style="background:#C9A84C"></span> L3 · Infra
+        </button>
+        <button class="filter-chip" data-filter="layer" data-val="4">
+          <span class="dot" style="background:#4CAF78"></span> L4 · Models
+        </button>
+        <button class="filter-chip" data-filter="layer" data-val="5">
+          <span class="dot" style="background:#5B8BDE"></span> L5 · Software
+        </button>
+        <button class="filter-chip" data-filter="layer" data-val="6">
+          <span class="dot" style="background:#9B6BD4"></span> L6 · Apps
+        </button>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Filing Status</div>
+      <div class="filter-group" id="status-filters">
+        <button class="filter-chip active" data-filter="status" data-val="all">All Status</button>
+        <button class="filter-chip" data-filter="status" data-val="filed">
+          <span class="dot" style="background:#4CAF78"></span> Public S-1
+        </button>
+        <button class="filter-chip" data-filter="status" data-val="confidential">
+          <span class="dot" style="background:#C9A84C"></span> Confidential
+        </button>
+        <button class="filter-chip" data-filter="status" data-val="shadow">
+          <span class="dot" style="background:#5B8BDE"></span> Shadow Pipeline
+        </button>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Sort By</div>
+      <select class="sort-select" id="sort-select">
+        <option value="signal">Signal Strength</option>
+        <option value="valuation">Valuation (High→Low)</option>
+        <option value="alpha">Company Name A→Z</option>
+        <option value="layer">Layer (1→6)</option>
+      </select>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Your Watchlist</div>
+      <div class="watchlist-count">
+        <span id="watchlist-sidebar-count">0</span> companies tracked
+      </div>
+      <button class="watchlist-export" id="export-watchlist">↓ Export Watchlist CSV</button>
+    </div>
+
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <div class="results-bar">
+      <div class="results-count">Showing <span id="showing-count">0</span> companies</div>
+      <div style="display:flex; gap: 12px; align-items: center;">
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--muted);">
+          ◆ Click any row for AI analysis
+        </span>
+      </div>
+    </div>
+
+    <div id="table-container">
+      <table class="ipo-table">
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>Layer</th>
+            <th>Status</th>
+            <th>Est. Valuation</th>
+            <th>Signal</th>
+            <th>Screen</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+
+    <div id="empty-state" class="empty-state" style="display:none;">
+      <h3>NO MATCHES FOUND</h3>
+      <p>Adjust your filters or search query</p>
+    </div>
+  </main>
+</div>
+
+<!-- DETAIL PANEL -->
+<div class="detail-panel" id="detail-panel">
+  <div class="panel-header">
+    <button class="panel-close" id="panel-close">✕</button>
+    <div class="panel-company" id="panel-name">—</div>
+    <div id="panel-tagline" style="font-size:12px; color:var(--muted); margin-top:4px;"></div>
+    <div class="panel-meta" id="panel-meta"></div>
+  </div>
+  <div class="panel-body">
+
+    <div class="panel-section">
+      <div class="panel-section-title">Filing Intelligence</div>
+      <div class="data-grid" id="panel-data-grid"></div>
+    </div>
+
+    <div class="panel-section">
+      <div class="panel-section-title">AI Investment Brief</div>
+      <div class="ai-insight-box">
+        <div class="ai-label">Keystone Atlas Analysis</div>
+        <div class="ai-insight-text loading" id="ai-insight-text">
+          Click "Generate Brief" to get an AI-powered investment analysis of this company within the 6-Layer Pyramid framework.
+        </div>
+        <button class="generate-btn" id="generate-btn" onclick="generateInsight()">
+          ◆ Generate Investment Brief
+        </button>
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <div class="panel-section-title">Key Watchpoints</div>
+      <div id="panel-watchpoints" style="font-size:12px; color:var(--muted); line-height:1.8;"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ─── DATA ─────────────────────────────────────────────────────────────────────
+const IPO_DATA = [
+  // ── MEGA-CAP HEADLINE IPOs ──────────────────────────────────────────────────
+  { id:1, name:"OpenAI", desc:"Foundation model leader; ChatGPT, GPT-4o, o-series; $20B ARR", layer:4, status:"confidential", valuation:1000, signal:5, sector:"Foundation AI", advanced:true, watchpoints:"$110B raised Feb 2026. Nonprofit-to-PBC restructure. Microsoft deep partnership. $14B annual burn. Q4 2026 target at ~$1T valuation.", investors:"Microsoft, SoftBank, Nvidia, Thrive Capital", target:"Q4 2026" },
+  { id:2, name:"Anthropic", desc:"Claude AI; safety-focused frontier model; $14B ARR run rate", layer:4, status:"confidential", valuation:380, signal:5, sector:"Foundation AI", advanced:true, watchpoints:"Wilson Sonsini engaged. $30B Series G Feb 2026 at $380B. Revenue tripling annually. Amazon & Google cloud concentration risk.", investors:"Amazon, Google, Coatue, Spark Capital", target:"2026–2027" },
+  { id:3, name:"SpaceX / xAI", desc:"Rockets, Starlink, and xAI Grok models; merged at $1.25T", layer:3, status:"confidential", valuation:1250, signal:5, sector:"Infrastructure/AI Compute", advanced:true, watchpoints:"xAI-SpaceX merger Feb 2026 creates largest private company ever. June 2026 IPO targeted at $1.5T. Orbital data center thesis.", investors:"Elon Musk, A16Z, Fidelity, Nvidia, Cisco", target:"June–July 2026" },
+  { id:4, name:"Databricks", desc:"AI data lakehouse; $4.5B ARR; 85% Fortune 100 penetration", layer:5, status:"confidential", valuation:134, signal:5, sector:"Data/AI Platform", advanced:true, watchpoints:"Confidential filing confirmed Q1 2026. Targeting Q2. Sets benchmark multiple for all AI SaaS IPOs. 65% YoY growth.", investors:"A16Z, Sequoia, Microsoft, Nvidia, T. Rowe Price", target:"Q2 2026" },
+  { id:5, name:"Cerebras Systems", desc:"Wafer-scale AI chips; WSE-3 world's largest chip; Nvidia rival", layer:2, status:"confidential", valuation:25, signal:5, sector:"AI Semiconductors", advanced:true, watchpoints:"Re-filed confidentially Feb 2026. $10B OpenAI compute deal. CFIUS concerns from Gulf investors. Morgan Stanley & Citi underwriting.", investors:"Altimeter, Foundation Capital, Total, Abu Dhabi Growth Fund", target:"Q2 2026 (April)" },
+  { id:6, name:"Waymo", desc:"Autonomous robotaxi; SF, LA, Phoenix; 4x expansion planned", layer:6, status:"shadow", valuation:45, signal:4, sector:"Autonomous Vehicles", advanced:true, watchpoints:"$16B raised Feb 2026 at $45B. Alphabet parent complex. Driver-free rides at 700K/week. 4x service area expansion.", investors:"Alphabet, Silver Lake, A16Z, Temasek", target:"2026–2027" },
+  // ── CONFIDENTIAL FILINGS ───────────────────────────────────────────────────
+  { id:7, name:"Discord", desc:"Community platform; 200M MAU; AI moderation & features", layer:6, status:"confidential", valuation:15, signal:4, sector:"Social/Community", advanced:false, watchpoints:"Confidential S-1 filed Jan 2026. Goldman + JPMorgan advising. AI safety moderation is core product roadmap.", investors:"Dragoneer, Greenoaks, Index Ventures", target:"Q2 2026" },
+  { id:8, name:"Strava", desc:"Fitness platform; 180M users; AI coaching launch; $2.2B", layer:6, status:"confidential", valuation:2.2, signal:4, sector:"HealthTech/AI Fitness", advanced:false, watchpoints:"Confidential filing Jan 2026. Goldman advising. AI personalized coaching is monetization unlock for 180M users.", investors:"Sequoia, Jackson Square, Elevate Capital", target:"Spring 2026" },
+  { id:9, name:"Zelis Healthcare", desc:"AI healthcare payments & analytics; 750+ health plan clients", layer:6, status:"confidential", valuation:17, signal:4, sector:"HealthTech AI", advanced:true, watchpoints:"Confidential S-1 filed Oct 2025. Goldman + JPMorgan hired. AI claims repricing at 50%+ margins vs 15% legacy.", investors:"Warburg Pincus, Goldman Sachs MBD", target:"2026" },
+  { id:10, name:"Lambda Labs", desc:"GPU cloud for AI training; $250M+ H1 2025 revenue; $6.2B", layer:3, status:"confidential", valuation:6.2, signal:4, sector:"AI Cloud/GPU Compute", advanced:false, watchpoints:"Banks hired for H1 2026 IPO. CoreWeave comparable. Macquarie-backed. Following CoreWeave to public markets.", investors:"Macquarie Group, Alumni Ventures, Mercato Partners", target:"H1 2026" },
+  { id:11, name:"Dataiku", desc:"Enterprise AI lifecycle platform; Morgan Stanley & Citi hired", layer:5, status:"confidential", valuation:3.7, signal:4, sector:"AI/Data Analytics", advanced:false, watchpoints:"H1 2026 debut possible. Targets Fortune 500 AI deployment. CapitalG-backed.", investors:"CapitalG, Tiger Global, Iconiq Growth", target:"H1 2026" },
+  { id:12, name:"Kraken", desc:"Crypto exchange; confidential S-1 filed Nov 2025; $20B", layer:6, status:"confidential", valuation:20, signal:3, sector:"Crypto/FinTech", advanced:false, watchpoints:"Confidential S-1 Nov 2025. Paused amid market volatility. Trump admin crypto support tailwind.", investors:"Citadel Securities, Jane Street, General Atlantic", target:"Paused (2026)" },
+  // ── SHADOW PIPELINE — HIGH CONVICTION ─────────────────────────────────────
+  { id:13, name:"Thinking Machines Lab", desc:"Broad capable AI; founded by ex-OpenAI CTO Mira Murati", layer:4, status:"shadow", valuation:55, signal:4, sector:"Foundation AI", advanced:true, watchpoints:"$2B seed at $12B. Targeting $50-60B in next round. Murati's OpenAI CTO credibility is the moat.", investors:"Andreessen Horowitz, NVentures, Spark Capital", target:"2027" },
+  { id:14, name:"Cohere", desc:"Enterprise LLMs; sovereign AI; Oracle, Dell, RBC clients", layer:4, status:"shadow", valuation:7, signal:4, sector:"Enterprise AI", advanced:false, watchpoints:"$240M ARR. CEO expressed IPO interest publicly. Enterprise-only focus. Sovereign AI tailwind outside US.", investors:"Nvidia, AMD, Salesforce Ventures, Inovia Capital", target:"2026" },
+  { id:15, name:"Scale AI", desc:"AI data labeling & RLHF; Pentagon contracts; Meta-invested", layer:5, status:"shadow", valuation:14, signal:4, sector:"AI Data/Training", advanced:true, watchpoints:"Meta led $14.3B investment 2025. CEO Alexandr Wang now at Meta. DoD mandate contracts. Revenue concentration risk.", investors:"Accel, Tiger Global, Coatue, Meta", target:"2026" },
+  { id:16, name:"Anduril Industries", desc:"Defense AI & autonomous systems; $20B Army contract 2026", layer:5, status:"shadow", valuation:28, signal:4, sector:"Defense AI", advanced:true, watchpoints:"$20B Army contract consolidates 120+ procurement actions. DoD primary customer = stable recurring revenue.", investors:"A16Z, Founders Fund, 8VC, Lux Capital", target:"2026–2027" },
+  { id:17, name:"Shield AI", desc:"Autonomous military AI; Hivemind; USAF CCA selection", layer:5, status:"shadow", valuation:12.7, signal:4, sector:"Defense AI", advanced:true, watchpoints:"$1.5B Series G at $12.7B. Advent + JPMorgan lead. USAF Collaborative Combat Aircraft = 10yr program of record.", investors:"Advent International, JPMorgan, Blackstone Preferred", target:"2026–2027" },
+  { id:18, name:"Figure AI", desc:"Humanoid robots; OpenAI brain; BMW + Amazon validation", layer:6, status:"shadow", valuation:39, signal:4, sector:"Robotics AI", advanced:true, watchpoints:"Amazon warehouse validation = commercial scale proof. OpenAI-powered. $39B valuation. First industrial humanoid.", investors:"OpenAI, Microsoft, Nvidia, Amazon, BMW, Bezos Expeditions", target:"2026–2027" },
+  { id:19, name:"SkildAI", desc:"Robot foundation models; omni-bodied brain for any robot", layer:4, status:"shadow", valuation:14, signal:4, sector:"Robotics AI", advanced:true, watchpoints:"$1.4B Series C Jan 2026. $14B valuation. Foundation model for robotics = horizontal platform play.", investors:"General Catalyst, Lightspeed, Sequoia Capital", target:"2027" },
+  { id:20, name:"Cursor / Anysphere", desc:"AI-first code editor; fastest growing dev tool ever; $9B", layer:6, status:"shadow", valuation:9, signal:4, sector:"AI Dev Tools", advanced:true, watchpoints:"$9B valuation. $500M ARR projected. GitHub Copilot displacement. Fastest dev tools revenue growth in history.", investors:"A16Z, Thrive Capital, OpenAI Fund, Stripe", target:"2026–2027" },
+  { id:21, name:"Perplexity AI", desc:"AI search engine; 1B+ monthly queries; $24B valuation", layer:6, status:"shadow", valuation:24, signal:4, sector:"AI Search", advanced:false, watchpoints:"$400M Series E at $24B. 1 billion monthly queries Q1 2026. Chrome acquisition bid active at $38B.", investors:"SoftBank, Nvidia, Jeff Bezos, IVP, Institutional Venture", target:"2026–2027" },
+  { id:22, name:"Nscale", desc:"European GPU cloud; $14.6B; OpenAI/Anthropic infrastructure", layer:3, status:"shadow", valuation:14.6, signal:4, sector:"AI Cloud Infrastructure", advanced:true, watchpoints:"$2B raised at $14.6B. H100/H200 GPU clusters. European sovereign AI infrastructure. CoreWeave competitor.", investors:"General Atlantic, Coatue, Macquarie", target:"2026–2027" },
+  { id:23, name:"VAST Data", desc:"All-flash AI data platform; InsightEngine; $9.1B valuation", layer:3, status:"shadow", valuation:9.1, signal:4, sector:"AI Data Infrastructure", advanced:true, watchpoints:"Purpose-built for AI training data at scale. VAST InsightEngine analytics layer on top of storage.", investors:"Next47, Goldman Sachs, A16Z, Tiger Global", target:"2026" },
+  { id:24, name:"Harvey AI", desc:"AI legal platform; $8B valuation; A&O Shearman, Magic Circle", layer:6, status:"shadow", valuation:8, signal:4, sector:"LegalTech AI", advanced:true, watchpoints:"$8B valuation Dec 2025. Elite law firm adoption. AI legal research at 50%+ margins vs 15% human billing.", investors:"OpenAI Fund, Sequoia, Kleiner Perkins, GV", target:"2026–2027" },
+  { id:25, name:"Mistral AI", desc:"European open-source LLMs; Le Chat; sovereign AI focus", layer:4, status:"shadow", valuation:6, signal:3, sector:"Foundation AI (European)", advanced:false, watchpoints:"EU AI Act tailwind. Open-source moat. Enterprise API revenue. French government backing.", investors:"A16Z, Lightspeed, Nvidia, General Catalyst", target:"2026–2027" },
+  { id:26, name:"ElevenLabs", desc:"Voice AI; $11B valuation; $330M+ ARR; enterprise leader", layer:6, status:"shadow", valuation:11, signal:3, sector:"Voice AI", advanced:false, watchpoints:"$500M Series D Sequoia led. Deutsche Telekom, Revolut, Meta clients. A16Z 4x'd. IPO readiness 2027-28.", investors:"Sequoia, A16Z, ICONIQ, Salesforce Ventures", target:"2027–2028" },
+  { id:27, name:"Canva", desc:"AI design platform; $4B ARR; 265M+ users; $42B valuation", layer:6, status:"shadow", valuation:42, signal:3, sector:"AI Creative Tools", advanced:false, watchpoints:"Blackbird says H2 2026 ready. Software index down 23.7% YTD = timing risk. Enterprise tier accelerating.", investors:"Blackbird, Sequoia, Felicis, Franklin Templeton", target:"H2 2026" },
+  { id:28, name:"Stripe", desc:"Payment infra; $1.4T payments volume; $60-90B valuation", layer:6, status:"shadow", valuation:75, signal:3, sector:"Fintech/Payments", advanced:false, watchpoints:"Years of IPO delays. AI-powered fraud and risk products differentiating. Competition from Adyen.", investors:"Sequoia, A16Z, Thrive Capital, Baillie Gifford", target:"2026–2027" },
+  { id:29, name:"Rippling", desc:"AI-powered HR/IT/Finance OS; $13.5B valuation; Parker Conrad", layer:6, status:"shadow", valuation:13.5, signal:3, sector:"HR/WorkTech AI", advanced:false, watchpoints:"AI workflow automation at core. Legal dispute with Deel. Fast revenue growth.", investors:"Kleiner Perkins, Founders Fund, Greenoaks", target:"2026" },
+  { id:30, name:"Notion", desc:"AI productivity platform; docs, wikis, agents; $10B", layer:6, status:"shadow", valuation:10, signal:3, sector:"Productivity AI", advanced:false, watchpoints:"Notion AI integration. Enterprise expansion from SMB base. Competing with Microsoft Copilot.", investors:"Sequoia, Coatue, Index Ventures, First Round", target:"2026–2027" },
+  // ── ENERGY & POWER (LAYER 1) ───────────────────────────────────────────────
+  { id:31, name:"X-Energy", desc:"Small modular nuclear reactors; TRISO-X fuel; Dow partner", layer:1, status:"filed", valuation:2, signal:5, sector:"Nuclear Energy", advanced:true, watchpoints:"Filed IPO March 20, 2026. AI data center power demand driving nuclear renaissance. DoE funding. XE-100 reactor.", investors:"DOE, Ares Capital, ONEnergy, Dow Chemical", target:"Q2 2026" },
+  { id:32, name:"Fervo Energy", desc:"Enhanced geothermal for AI data centers; Google, Microsoft PPAs", layer:1, status:"shadow", valuation:1.4, signal:3, sector:"Geothermal Energy", advanced:false, watchpoints:"20-year PPAs with Google and Microsoft. Entire revenue model underpinned by AI data center power demand.", investors:"Breakthrough Energy, Prelude Ventures, Liberty Energy", target:"2026–2027" },
+  { id:33, name:"Base Power", desc:"Residential AI-managed backup power; $1B Series C in 8 months", layer:1, status:"shadow", valuation:1.5, signal:3, sector:"Energy Storage AI", advanced:false, watchpoints:"$1B Series C Oct 2025, 8 months after Series B. AI-managed grid services. Unprecedented growth pace.", investors:"Andreessen Horowitz, Obvious Ventures", target:"2026–2027" },
+  { id:34, name:"Commonwealth Fusion", desc:"Compact fusion energy; SPARC reactor; $2B raised; MIT", layer:1, status:"shadow", valuation:4, signal:3, sector:"Fusion Energy", advanced:false, watchpoints:"$2B raised. SPARC high-field magnet breakthrough. Data center long-term power solution. 2027+ timeline.", investors:"Tiger Global, Breakthrough Energy, Google, Khosla", target:"2027+" },
+  { id:35, name:"TAE Technologies", desc:"Hydrogen-boron fusion; Norman machine; $1.2B raised", layer:1, status:"shadow", valuation:1.2, signal:2, sector:"Fusion Energy", advanced:false, watchpoints:"$1.2B raised. Hydrogen-boron fusion. Long commercialization timeline but strategic AI data center play.", investors:"Google, Venrock, Reimagined Ventures", target:"2028+" },
+  // ── CHIPS & HARDWARE (LAYER 2) ────────────────────────────────────────────
+  { id:36, name:"Xanadu", desc:"Photonic quantum computing; $3.6B SPAC deal; NASDAQ", layer:2, status:"filed", valuation:3.6, signal:4, sector:"Quantum Computing", advanced:false, watchpoints:"SPAC deal with Crane Harbor closed. NASDAQ listing confirmed. $500M raised including $275M PIPE.", investors:"Bessemer, Georgian, Capricorn Investment Group", target:"Completing 2026" },
+  { id:37, name:"Groq", desc:"LPU AI inference chips; 500 tokens/sec; $2.8B valuation", layer:2, status:"shadow", valuation:2.8, signal:3, sector:"AI Inference Chips", advanced:true, watchpoints:"$2.8B valuation. Language Processing Unit = 5x faster inference than Nvidia. API-first go-to-market.", investors:"Tiger Global, BlackRock, Salesforce Ventures", target:"2026–2027" },
+  { id:38, name:"SambaNova Systems", desc:"AI chip & DataScale platform; national AI centers; $5.1B", layer:2, status:"shadow", valuation:5.1, signal:3, sector:"AI Chip Systems", advanced:true, watchpoints:"$5.1B valuation. National AI research center deployments. Full-stack AI hardware + software.", investors:"SoftBank, Google, Intel Capital, GV", target:"2026–2027" },
+  { id:39, name:"Tenstorrent", desc:"RISC-V AI chips; Jim Keller's company; $2.6B valuation", layer:2, status:"shadow", valuation:2.6, signal:3, sector:"AI Semiconductors", advanced:true, watchpoints:"Jim Keller ex-AMD/Apple/Tesla. RISC-V open architecture AI chip. $2.6B. Hyundai and Samsung backers.", investors:"Hyundai, Samsung, LG, AFW Partners", target:"2027" },
+  { id:40, name:"Lightmatter", desc:"Photonic AI chips; light-based interconnects; $4.4B", layer:2, status:"shadow", valuation:4.4, signal:3, sector:"Photonic AI Hardware", advanced:true, watchpoints:"$4.4B valuation. Photonic interconnects reduce data center energy 10x. Passage chip in production.", investors:"Google, HPE, GV, SIP Global Partners", target:"2027" },
+  { id:41, name:"Recursive Intelligence", desc:"AI chip design platform; $4B valuation; Lightspeed + Sequoia", layer:2, status:"shadow", valuation:4, signal:3, sector:"AI Chip Design", advanced:true, watchpoints:"$300M Series A at $4B. AI-powered semiconductor design. Faster chip tape-out cycles.", investors:"Lightspeed Venture Partners, Sequoia Capital", target:"2026–2027" },
+  { id:42, name:"Normal Computing", desc:"AI-native EDA + thermodynamic computing; Samsung-backed", layer:2, status:"shadow", valuation:0.5, signal:3, sector:"AI Chip Design", advanced:false, watchpoints:"Samsung Catalyst led. Used by top 10 chip companies. CN101 chip: 1,000x energy efficiency for inference.", investors:"Samsung Catalyst, Andreessen Horowitz", target:"2027+" },
+  { id:43, name:"Skydio", desc:"AI autonomous drones; DoD DJI replacement; $2.2B", layer:2, status:"shadow", valuation:2.2, signal:3, sector:"Defense/Inspection Drones", advanced:true, watchpoints:"$2.2B valuation. AI drone autonomy. DJI replacement mandate for US government. Enterprise inspection.", investors:"Andreessen Horowitz, Next47, Tiger Global, Nvidia", target:"2027" },
+  { id:44, name:"Positron AI", desc:"AI semiconductor startup; $230M Series B; $1B+ valuation", layer:2, status:"shadow", valuation:1, signal:3, sector:"AI Semiconductors", advanced:false, watchpoints:"Founded 2023. $300M raised. Valor Equity, Jump Trading backed. Next-gen AI inference chips.", investors:"Valor Equity Partners, Jump Trading", target:"2027" },
+  // ── DATA CENTERS & INFRASTRUCTURE (LAYER 3) ───────────────────────────────
+  { id:46, name:"Together AI", desc:"GPU cloud for AI inference; $3.3B; inference-optimized", layer:3, status:"shadow", valuation:3.3, signal:3, sector:"AI Inference Cloud", advanced:false, watchpoints:"$3.3B valuation. Inference-optimized cloud. Growing as models get deployed at scale.", investors:"Kleiner Perkins, NVentures, Emergence Capital", target:"2026–2027" },
+  { id:47, name:"Render", desc:"Cloud hosting for AI and agentic apps; $1.5B; TC Battlefield", layer:3, status:"shadow", valuation:1.5, signal:3, sector:"AI App Hosting", advanced:false, watchpoints:"$1.5B valuation. $100M Series C1. TechCrunch Battlefield winner. Tuned for agentic AI workloads.", investors:"General Catalyst, Bessemer Venture Partners", target:"2026–2027" },
+  { id:48, name:"Vercel", desc:"AI-powered frontend cloud; Next.js creator; v0 AI tool; $3.25B", layer:3, status:"shadow", valuation:3.25, signal:3, sector:"AI Developer Platform", advanced:false, watchpoints:"$3.25B valuation. v0 AI design tool viral. Next.js standard for AI web apps. 11M+ developers.", investors:"Accel, GV, Tiger Global, CRV", target:"2026–2027" },
+  { id:49, name:"Modal Labs", desc:"Serverless GPU cloud for AI developers; fast-growing", layer:3, status:"shadow", valuation:1.2, signal:2, sector:"AI Developer Infrastructure", advanced:false, watchpoints:"Developer-focused GPU serverless. Fast growing. Redpoint-backed.", investors:"Redpoint, Harrison Metal, Bain Capital Ventures", target:"2027+" },
+  // ── FOUNDATION MODELS (LAYER 4) ──────────────────────────────────────────
+  { id:50, name:"SSI (Safe Superintelligence)", desc:"Ilya Sutskever's safety AI lab; $1B seed at $5B", layer:4, status:"shadow", valuation:5, signal:3, sector:"AI Safety Research", advanced:false, watchpoints:"Ilya Sutskever ex-OpenAI. $1B seed at $5B. No product, pure research. Long IPO horizon.", investors:"Andreessen Horowitz, Sequoia, DST Global", target:"2028+" },
+  { id:51, name:"Reflection AI", desc:"Open-source frontier AI; ex-DeepMind; $25B talks; Nvidia", layer:4, status:"shadow", valuation:25, signal:3, sector:"Foundation AI", advanced:false, watchpoints:"In talks to raise $2.5B at $25B (3x increase). US open-source answer to DeepSeek.", investors:"Nvidia, Sequoia, Lightspeed Venture Partners", target:"2027" },
+  { id:52, name:"Hugging Face", desc:"Open-source AI hub; 1.2M+ models; developer community", layer:4, status:"shadow", valuation:4.5, signal:3, sector:"AI Developer Platform", advanced:false, watchpoints:"$4.5B valuation. Platform for model sharing. Enterprise Hub revenue growing.", investors:"A16Z, Nvidia, Google, Intel, IBM, Salesforce", target:"2026–2027" },
+  { id:53, name:"Poolside AI", desc:"Code-specialized foundation model; enterprise code generation", layer:4, status:"shadow", valuation:3, signal:3, sector:"AI Coding Models", advanced:false, watchpoints:"$3B valuation. Code foundation model. Competing with OpenAI Codex and GitHub Copilot.", investors:"Bain Capital, GV, Dell Technologies Capital", target:"2026–2027" },
+  { id:54, name:"World Labs", desc:"Spatial AI and 3D world modeling; Fei-Fei Li; $1B+", layer:4, status:"shadow", valuation:1, signal:2, sector:"Spatial AI", advanced:false, watchpoints:"Founded by Fei-Fei Li. Embodied AI and 3D world modeling. $291M raised. Pre-product.", investors:"Andreessen Horowitz, NEA, Radical Ventures", target:"2028+" },
+  { id:55, name:"Fundamental AI", desc:"Foundation model lab; $1.4B at Series A; Feb 2026", layer:4, status:"shadow", valuation:1.4, signal:3, sector:"Foundation AI", advanced:false, watchpoints:"$255M Series A at $1.4B Feb 2026. General Catalyst backed. New entrant foundation lab.", investors:"General Catalyst, Y Combinator, Black Forest Labs", target:"2027+" },
+  { id:56, name:"humans&", desc:"Human-AI collaboration research; $4.5B seed; Georges Harik", layer:4, status:"shadow", valuation:4.5, signal:3, sector:"AI Research", advanced:false, watchpoints:"$480M seed at $4.5B — largest AI collaboration seed. AI augments workers vs replaces thesis.", investors:"SV Angel, Georges Harik, Andreessen Horowitz", target:"2028+" },
+  // ── SOFTWARE INFRASTRUCTURE (LAYER 5) ─────────────────────────────────────
+  { id:57, name:"Glean", desc:"Enterprise AI search; $4.6B; Fortune 500 adoption; $100M ARR", layer:5, status:"shadow", valuation:4.6, signal:4, sector:"Enterprise AI Search", advanced:true, watchpoints:"$4.6B valuation. AI workplace search across all apps. $100M ARR. Microsoft Copilot direct competitor.", investors:"Sequoia, Lightspeed, General Catalyst, ICONIQ", target:"2026–2027" },
+  { id:58, name:"Gong", desc:"AI revenue intelligence; conversation analytics; $7.25B", layer:5, status:"shadow", valuation:7.25, signal:3, sector:"Sales Intelligence AI", advanced:true, watchpoints:"$7.25B valuation. AI sales coaching. 4,000+ enterprise clients. Long-awaited IPO candidate.", investors:"Franklin Templeton, Tiger Global, Coatue, Sequoia", target:"2026" },
+  { id:59, name:"Airtable", desc:"No-code AI platform; enterprise workflows; $11B", layer:5, status:"shadow", valuation:11, signal:3, sector:"Enterprise SaaS/AI", advanced:false, watchpoints:"$11B valuation. AI workflow automation. Competing with Notion and Monday.com.", investors:"Benchmark, Thrive Capital, Caffeinated Capital", target:"2026" },
+  { id:60, name:"Celonis", desc:"Process mining & AI process intelligence; $13B; SAP partner", layer:5, status:"shadow", valuation:13, signal:3, sector:"Enterprise Process AI", advanced:false, watchpoints:"$13B valuation. AI process discovery for Fortune 500. SAP Signavio competitor.", investors:"Arena Holdings, Durable Capital, T. Rowe Price", target:"2026" },
+  { id:61, name:"Arctic Wolf", desc:"AI-powered cybersecurity SOC-as-a-service; $4.3B", layer:5, status:"shadow", valuation:4.3, signal:3, sector:"Cybersecurity AI", advanced:false, watchpoints:"$4.3B valuation. AI SOC disrupting managed security. Growing cyber market.", investors:"Viking Global, Battery Ventures, Owl Rock Capital", target:"2026" },
+  { id:62, name:"Snyk", desc:"AI developer security; code scanning; $7.4B valuation", layer:5, status:"shadow", valuation:7.4, signal:3, sector:"DevSecOps AI", advanced:false, watchpoints:"$7.4B valuation. AI code vulnerability scanning. Developer-led security model.", investors:"Accel, Coatue, GV, Tiger Global", target:"2026" },
+  { id:63, name:"Cohesity", desc:"AI data security & ransomware recovery; Veritas merger; $7B", layer:5, status:"shadow", valuation:7, signal:3, sector:"Data Security AI", advanced:false, watchpoints:"Veritas merger completed. AI ransomware recovery. Microsoft, Google, SoftBank backers.", investors:"Microsoft, Google, SoftBank, Sequoia", target:"2026" },
+  { id:64, name:"1Password", desc:"AI secrets & identity management; enterprise; $6.8B", layer:5, status:"shadow", valuation:6.8, signal:3, sector:"Security/Identity AI", advanced:false, watchpoints:"$6.8B valuation. AI secrets detection expanding to developer workflows.", investors:"Accel, Tiger Global, Lightspeed", target:"2026" },
+  { id:65, name:"Vanta", desc:"Automated security compliance; SOC 2 AI automation; $4.2B", layer:5, status:"shadow", valuation:4.2, signal:3, sector:"Security Compliance AI", advanced:false, watchpoints:"$150M raised 2025. AI-powered SOC 2 and ISO 27001. Enterprise compliance demand surging.", investors:"Andreessen Horowitz, Craft Ventures, Y Combinator", target:"2026–2027" },
+  { id:66, name:"Plaid", desc:"Open banking infrastructure; $13.4B; DoJ blocked Visa deal", layer:5, status:"shadow", valuation:13.4, signal:3, sector:"Open Banking Infrastructure", advanced:false, watchpoints:"$13.4B valuation. Visa acquisition blocked. IPO long anticipated. AI financial data layer.", investors:"Kleiner Perkins, Goldman Sachs, Andreessen Horowitz", target:"2026–2027" },
+  { id:67, name:"Outreach", desc:"AI sales execution platform; $4.4B valuation; sales OS", layer:5, status:"shadow", valuation:4.4, signal:3, sector:"Sales AI Platform", advanced:false, watchpoints:"$4.4B valuation. AI sales sequencing. Competing with Salesloft.", investors:"Sands Capital, Tiger Global, DFJ Growth", target:"2026–2027" },
+  { id:68, name:"Highspot", desc:"AI sales enablement platform; $3.5B valuation", layer:5, status:"shadow", valuation:3.5, signal:3, sector:"Sales Enablement AI", advanced:false, watchpoints:"$3.5B valuation. AI content for sales teams. Microsoft and Salesforce integrations.", investors:"ICONIQ, Tiger Global, Madrona Venture Group", target:"2027" },
+  { id:69, name:"Weights & Biases", desc:"AI training tracker; MLOps; 1,000+ ML teams; $1.25B", layer:5, status:"shadow", valuation:1.25, signal:3, sector:"MLOps Platform", advanced:false, watchpoints:"$1.25B valuation. Model training and experiment tracking. NVIDIA partnership.", investors:"Coatue, Insight Partners, NVentures, Sapphire Ventures", target:"2026–2027" },
+  { id:70, name:"Weaviate", desc:"AI-native vector database; RAG infrastructure; $2.25B", layer:5, status:"shadow", valuation:2.25, signal:3, sector:"AI Database Infrastructure", advanced:true, watchpoints:"$2.25B valuation. Vector database for AI retrieval. RAG architecture backbone.", investors:"Index Ventures, Salesforce Ventures, Bloomberg Beta", target:"2026–2027" },
+  { id:71, name:"Scale AI", desc:"AI data; Pentagon RLHF contracts; Alexandr Wang at Meta", layer:5, status:"shadow", valuation:14, signal:4, sector:"AI Data/Training", advanced:true, watchpoints:"Meta led $14.3B investment. Pentagon contracts. CEO now at Meta. DoD mandate revenue.", investors:"Meta, Accel, Tiger Global, Coatue", target:"2026" },
+  { id:72, name:"Deepgram", desc:"AI speech recognition API; real-time transcription; $1.8B", layer:5, status:"shadow", valuation:1.8, signal:3, sector:"Speech AI", advanced:false, watchpoints:"$1.8B valuation. Real-time speech recognition API. Enterprise voice AI infrastructure.", investors:"Y Combinator, Tiger Global, BlackRock", target:"2027" },
+  { id:73, name:"Orca Security", desc:"Agentless cloud security platform; AI threat detection; $1.8B", layer:5, status:"shadow", valuation:1.8, signal:3, sector:"Cloud Security AI", advanced:false, watchpoints:"$1.8B valuation. Agentless cloud security. AI threat detection across multi-cloud.", investors:"ICONIQ, CapitalG, GGV Capital", target:"2026–2027" },
+  { id:74, name:"Hex Technologies", desc:"AI analytics notebooks; Jupyter replacement; $1.1B", layer:5, status:"shadow", valuation:1.1, signal:3, sector:"AI Analytics", advanced:false, watchpoints:"$1.1B valuation. AI-powered data notebooks. Replacing Jupyter and Mode for enterprise analytics.", investors:"Redpoint, Andreessen Horowitz, Sequoia", target:"2027" },
+  { id:75, name:"Writer", desc:"Full-stack enterprise AI; content, agents, workflows; $1.9B", layer:5, status:"shadow", valuation:1.9, signal:3, sector:"Enterprise Content AI", advanced:false, watchpoints:"Full-stack enterprise AI. $1.9B valuation. Balderton and Insight-backed.", investors:"ICONIQ, Balderton, Insight Partners", target:"2026–2027" },
+  { id:76, name:"Contextual AI", desc:"Enterprise RAG platform; grounded AI for regulated industries", layer:5, status:"shadow", valuation:1.1, signal:3, sector:"Enterprise RAG AI", advanced:false, watchpoints:"$1.1B valuation. RAG platform for finance, healthcare, legal. Reduces AI hallucination.", investors:"Andreessen Horowitz, Lightspeed Venture Partners", target:"2027" },
+  { id:77, name:"Aalyria", desc:"AI network orchestration; Google spinout; defense comms; $1.3B", layer:5, status:"shadow", valuation:1.3, signal:3, sector:"Defense Network AI", advanced:false, watchpoints:"$100M Series B. Google spinout. Tightbeam satellite comms. Network scheduling AI.", investors:"Google, Alsop Louie Partners, Lux Capital", target:"2027" },
+  // ── APPS & SERVICES (LAYER 6) ─────────────────────────────────────────────
+  { id:78, name:"SymphonyAI", desc:"Industrial & enterprise AI; manufacturing, retail, healthcare", layer:6, status:"shadow", valuation:2.5, signal:3, sector:"Industrial AI", advanced:true, watchpoints:"CFO with IPO experience hired. Hundreds of millions ARR. Multi-sector Layer 6 deployment.", investors:"SymphonyAI Ventures (Romesh Wadhwani)", target:"2026" },
+  { id:79, name:"Sierra AI", desc:"Conversational AI agents; Bret Taylor (ex-Salesforce CEO)", layer:6, status:"shadow", valuation:4.5, signal:3, sector:"AI Customer Service", advanced:true, watchpoints:"$4.5B valuation. Founded by Bret Taylor. AI customer service at 50%+ margins vs 15-20% human.", investors:"Sequoia, Benchmark, Thrive Capital", target:"2026–2027" },
+  { id:80, name:"Hippocratic AI", desc:"AI healthcare models; patient-facing; $1.6B; Kleiner Perkins", layer:6, status:"shadow", valuation:1.6, signal:3, sector:"HealthTech AI", advanced:true, watchpoints:"$141M Series B at $1.64B. Patient-facing AI at 50%+ margin vs human care coordinators.", investors:"Kleiner Perkins, General Catalyst, Andreessen Horowitz", target:"2026–2027" },
+  { id:81, name:"Abridge AI", desc:"AI clinical documentation; Epic Systems; UPMC partner", layer:6, status:"shadow", valuation:2.5, signal:3, sector:"HealthTech AI", advanced:true, watchpoints:"Epic integration = 300+ health system access. AI ambient documentation at 50%+ margin.", investors:"A16Z, Mayo Clinic, UPMC, Kaiser Permanente", target:"2027" },
+  { id:82, name:"Ambience Healthcare", desc:"AI ambient scribe; Epic partner; physician workflow; A16Z", layer:6, status:"shadow", valuation:1, signal:3, sector:"HealthTech AI", advanced:true, watchpoints:"A16Z-backed. Epic integration. AI ambient documentation. OpenAI partnership.", investors:"Andreessen Horowitz, OpenAI, Greenoaks Capital", target:"2027" },
+  { id:83, name:"OpenEvidence", desc:"AI medical platform for clinicians; 700K+ physicians; $3B", layer:6, status:"shadow", valuation:3, signal:3, sector:"Medical AI Platform", advanced:true, watchpoints:"$250M Series D Jan 2026 Thrive + DST. 700K physicians using daily. Epic integration.", investors:"Thrive Global, DST Global, Sequoia Capital", target:"2027" },
+  { id:84, name:"Viz.ai", desc:"AI medical imaging; stroke detection; FDA cleared; $1B", layer:6, status:"shadow", valuation:1, signal:3, sector:"Medical Imaging AI", advanced:true, watchpoints:"$1B valuation. AI stroke and cardiac detection. Hospital network adoption. 50%+ margin.", investors:"Tiger Global, Kleiner Perkins, GV", target:"2027" },
+  { id:85, name:"Cognition AI (Devin)", desc:"AI software engineer; Devin agent; $4B; Founders Fund", layer:6, status:"shadow", valuation:4, signal:3, sector:"AI Dev Tools", advanced:true, watchpoints:"$4B valuation. Devin is first commercial AI software engineer. GitHub Copilot displacement.", investors:"Founders Fund, Peter Thiel, Patrick Collison, Stripe", target:"2026–2027" },
+  { id:86, name:"Replit", desc:"AI coding platform; collaborative IDE; 30M+ developers; $1.16B", layer:6, status:"shadow", valuation:1.16, signal:3, sector:"AI Dev Tools", advanced:false, watchpoints:"$1.16B valuation. AI coding environment. 30M+ developers. Cursor competitor.", investors:"Andreessen Horowitz, Google Ventures, Y Combinator", target:"2026–2027" },
+  { id:87, name:"Figure AI", desc:"Humanoid robots; OpenAI brain; BMW + Amazon validation; $39B", layer:6, status:"shadow", valuation:39, signal:4, sector:"Robotics AI", advanced:true, watchpoints:"Amazon warehouse = commercial scale proof. OpenAI-powered. First industrial humanoid at scale.", investors:"OpenAI, Microsoft, Nvidia, Amazon, BMW, Bezos Expeditions", target:"2026–2027" },
+  { id:88, name:"Apptronik", desc:"Humanoid robot Apollo; $935M; Google DeepMind partner; $5.3B", layer:6, status:"shadow", valuation:5.3, signal:3, sector:"Humanoid Robotics", advanced:true, watchpoints:"$935M Series A. Mercedes-Benz, GXO, Jabil commercial contracts. Google DeepMind Gemini Robotics.", investors:"B Capital, Google, Mercedes-Benz, John Deere, AT&T Ventures", target:"2027" },
+  { id:89, name:"Waabi", desc:"AI-first autonomous trucking; no safety driver; Uber Freight", layer:6, status:"shadow", valuation:5.5, signal:3, sector:"Autonomous Logistics AI", advanced:false, watchpoints:"$750M Series C + $250M milestone Feb 2026. Uber Freight partnership removes GTM risk.", investors:"Khosla Ventures, Uber, Georgian Partners", target:"2026–2027" },
+  { id:90, name:"Runway ML", desc:"AI video generation; Gen-3 Alpha; Hollywood studio adoption", layer:6, status:"shadow", valuation:3, signal:3, sector:"Generative AI (Video)", advanced:false, watchpoints:"$315M Series E Feb 2026. Gen-3 Alpha model. Netflix, HBO adoption. Sora and Kling competitors.", investors:"Google, Nvidia, General Atlantic, Fidelity, Felicis", target:"2026–2027" },
+  { id:91, name:"Covariant", desc:"AI robotics foundation model; warehouse automation; $2.7B", layer:6, status:"shadow", valuation:2.7, signal:3, sector:"Warehouse Robotics AI", advanced:true, watchpoints:"$2.7B valuation. RFM-1 robot foundation model. ABB partnership. Amazon and DHL deployments.", investors:"Index Ventures, Amplify Partners, Radical Ventures", target:"2027" },
+  { id:92, name:"Bedrock Robotics", desc:"AI autonomous construction equipment; Joe Lonsdale invested", layer:6, status:"shadow", valuation:1.8, signal:3, sector:"Construction AI", advanced:true, watchpoints:"Joe Lonsdale Palantir co-founder invested. Autonomous excavators at 50%+ margins vs 15% legacy.", investors:"8VC, Formation 8, Founders Fund", target:"2027" },
+  { id:93, name:"Gecko Robotics", desc:"AI robotic inspection; industrial infrastructure; $1B", layer:6, status:"shadow", valuation:1, signal:3, sector:"Industrial Inspection AI", advanced:true, watchpoints:"$1B valuation. AI pipeline and tank inspection at 50%+ margins vs human inspectors.", investors:"Andreessen Horowitz, Tiger Global, Addition", target:"2026–2027" },
+  { id:94, name:"Machina Labs", desc:"AI robotic manufacturing; aerospace sheet metal; $400M", layer:6, status:"shadow", valuation:0.4, signal:3, sector:"Manufacturing AI", advanced:true, watchpoints:"AI-driven sheet metal forming. Aerospace and defense. Layer 6 margin destruction in fabrication.", investors:"DCVC, Founders Fund", target:"2027" },
+  { id:95, name:"Decagon", desc:"AI customer support agents; tripled valuation in under a year", layer:6, status:"shadow", valuation:1.5, signal:3, sector:"AI Customer Support", advanced:true, watchpoints:"$250M Series D Jan 2026. Coatue + Index led. Tripled valuation. AI agents at 50%+ margins.", investors:"Andreessen Horowitz, Coatue, Index Ventures", target:"2026–2027" },
+  { id:96, name:"Clay", desc:"AI sales intelligence; $1.25B; Sequoia-backed; GTM platform", layer:6, status:"shadow", valuation:1.25, signal:3, sector:"Sales AI", advanced:false, watchpoints:"$40M Series B at $1.25B. AI-powered GTM platform. Growing enterprise adoption.", investors:"Sequoia, First Round, Boldstart, Box Group", target:"2027" },
+  { id:97, name:"Ramp", desc:"AI corporate finance platform; $13B; $500M ARR", layer:6, status:"shadow", valuation:13, signal:3, sector:"FinTech AI", advanced:false, watchpoints:"AI expense management and corporate cards. $13B valuation. CFO workflow lock-in.", investors:"Founders Fund, Thrive Capital, D1 Capital", target:"2026" },
+  { id:98, name:"Brex", desc:"AI corporate cards and spend management; $12B valuation", layer:6, status:"shadow", valuation:12, signal:3, sector:"FinTech AI", advanced:false, watchpoints:"$12B valuation. AI expense management. Startup-to-enterprise pivot. Competing with Ramp.", investors:"Kleiner Perkins, Greenoaks, TCV", target:"2026" },
+  { id:99, name:"Deel", desc:"Global payroll; AI HR automation; $500M ARR; $12B", layer:6, status:"shadow", valuation:12, signal:3, sector:"HRTech AI", advanced:false, watchpoints:"$12B valuation. Legal battles with Rippling. $500M ARR. AI compliance automation.", investors:"A16Z, Coatue, YC, Spark Capital", target:"2026" },
+  { id:100, name:"Rippling", desc:"AI HR/IT/Finance OS; Parker Conrad; $13.5B valuation", layer:6, status:"shadow", valuation:13.5, signal:3, sector:"HR/WorkTech AI", advanced:false, watchpoints:"AI workflow automation. Legal dispute with Deel. Fast revenue growth.", investors:"Kleiner Perkins, Founders Fund, Greenoaks Capital", target:"2026" },
+  { id:101, name:"Revolut", desc:"European neobank; $45B valuation; AI fraud detection", layer:6, status:"shadow", valuation:45, signal:3, sector:"Neobanking/Fintech", advanced:false, watchpoints:"$45B valuation. UK FCA licence secured. AI fraud and financial product suite.", investors:"SoftBank, Tiger Global, Balderton Capital", target:"2026" },
+  { id:102, name:"TRM Labs", desc:"AI crypto fraud detection; $2B; IRS, Secret Service clients", layer:6, status:"shadow", valuation:2, signal:3, sector:"Crypto Compliance AI", advanced:false, watchpoints:"$2B valuation. AI blockchain analytics. Used by IRS, Secret Service, Binance.", investors:"Salesforce Ventures, Santander InnoVentures, Y Combinator", target:"2026–2027" },
+  { id:103, name:"Basis", desc:"AI accounting automation; $1.1B; Khosla + Accel; Series B", layer:6, status:"shadow", valuation:1.1, signal:3, sector:"FinTech AI", advanced:true, watchpoints:"$100M Series B at $1.1B. AI accounting at 50%+ margins vs legacy accounting services.", investors:"Khosla Ventures, Accel Partners", target:"2026–2027" },
+  { id:104, name:"Pershing Square Capital", desc:"Ackman hedge fund IPO; AI-assisted portfolio; $10B", layer:6, status:"shadow", valuation:10, signal:3, sector:"Asset Management", advanced:false, watchpoints:"Bloomberg reported Q1 2026 IPO. $10B valuation.", investors:"Pershing Square Holdings", target:"2026" },
+  { id:105, name:"Synthesia", desc:"AI video generation; enterprise training videos; $2.1B", layer:6, status:"shadow", valuation:2.1, signal:3, sector:"AI Video (Enterprise)", advanced:false, watchpoints:"$2.1B valuation. Enterprise training video automation. $100M ARR.", investors:"Kleiner Perkins, Accel, Nvidia, WPP", target:"2026–2027" },
+  { id:106, name:"Genesys", desc:"AI customer experience platform; $21B valuation; $3B ARR", layer:6, status:"shadow", valuation:21, signal:3, sector:"CX AI/Contact Center", advanced:false, watchpoints:"AI-native contact center. $3B ARR. Permira-backed.", investors:"Permira, Salesforce Ventures", target:"2026" },
+  { id:107, name:"Upgrade", desc:"AI lending platform; $6.3B valuation; consumer credit; Ribbit", layer:6, status:"shadow", valuation:6.3, signal:2, sector:"LendingTech AI", advanced:false, watchpoints:"$6.3B valuation. AI personal loans and credit cards. CEO Renaud Laplanche.", investors:"Ribbit Capital, Kora Management", target:"2026" },
+  { id:108, name:"Midjourney", desc:"AI image generation; $10B estimate; self-funded; profitable", layer:6, status:"shadow", valuation:10, signal:2, sector:"Generative AI (Image)", advanced:false, watchpoints:"Self-funded and profitable. CEO David Holz anti-IPO. IP challenges from Getty lawsuit.", investors:"Self-funded (no VC)", target:"2027+" },
+  { id:109, name:"ElevenLabs", desc:"Voice AI; $11B; $330M+ ARR; Deutsche Telekom, Meta clients", layer:6, status:"shadow", valuation:11, signal:3, sector:"Voice AI", advanced:false, watchpoints:"$500M Series D Sequoia led. A16Z 4x'd investment. IPO readiness 2027-28.", investors:"Sequoia, A16Z, ICONIQ, Salesforce Ventures", target:"2027–2028" },
+  { id:110, name:"Adept AI", desc:"AI action models; web and desktop task automation agents", layer:6, status:"shadow", valuation:1, signal:3, sector:"AI Agents", advanced:false, watchpoints:"$1B valuation. AI agents that take actions in software. Salesforce agentic competitor.", investors:"General Catalyst, Spark Capital, Greylock Partners", target:"2027" },
+  // ── DEFENSE & AEROSPACE AI ────────────────────────────────────────────────
+  { id:111, name:"Vannevar Labs", desc:"AI defense intelligence; DoD NGA prime contractor; $1.5B", layer:5, status:"shadow", valuation:1.5, signal:3, sector:"Defense Intelligence AI", advanced:true, watchpoints:"NGA prime contract. AI battlefield intelligence. In-Q-Tel backed.", investors:"In-Q-Tel, 8VC, Felicis Ventures", target:"2027" },
+  { id:112, name:"Primer AI", desc:"AI NLP for defense; $2B valuation; intelligence community", layer:5, status:"shadow", valuation:2, signal:3, sector:"Defense NLP AI", advanced:true, watchpoints:"$2B valuation. DoD and IC AI contracts. NLP for battlefield comms analysis.", investors:"In-Q-Tel, Lux Capital, Addition", target:"2027" },
+  { id:113, name:"Rebellion Defense", desc:"AI software for defense analytics; Goldman + A16Z backed", layer:5, status:"shadow", valuation:1.1, signal:3, sector:"Defense AI", advanced:false, watchpoints:"Goldman Sachs, Andreessen backed. DoD analytics contracts. Defense AI mandate beneficiary.", investors:"Goldman Sachs MBD, A16Z, In-Q-Tel", target:"2026–2027" },
+  // ── HEALTHCARE AI ─────────────────────────────────────────────────────────
+  { id:114, name:"Isomorphic Labs", desc:"AI drug discovery; DeepMind spinout; AlphaFold3; $3B", layer:6, status:"shadow", valuation:3, signal:3, sector:"Drug Discovery AI", advanced:true, watchpoints:"Alphabet/DeepMind spinout. AlphaFold3 protein structure. Eli Lilly, Novartis partnerships.", investors:"Alphabet/DeepMind parent", target:"2027+" },
+  { id:115, name:"Cradle", desc:"AI protein design for drug discovery; $500M; Breakthrough Energy", layer:6, status:"shadow", valuation:0.5, signal:3, sector:"BioTech AI", advanced:true, watchpoints:"AI protein engineering at 50%+ margins vs traditional drug discovery. Breakthrough Energy backed.", investors:"Breakthrough Energy Ventures, Index Ventures", target:"2027" },
+  { id:116, name:"Nabla", desc:"AI ambient scribe for physicians; European leader", layer:6, status:"shadow", valuation:0.5, signal:2, sector:"HealthTech AI", advanced:false, watchpoints:"European healthcare AI leader. Physician workflow automation.", investors:"Cathay Innovation, Zinal Growth, Bpifrance", target:"2027+" },
+  { id:117, name:"Suki AI", desc:"AI voice assistant for physicians; Nuance competitor; $500M", layer:6, status:"shadow", valuation:0.5, signal:2, sector:"Clinical AI", advanced:false, watchpoints:"$500M valuation. AI physician voice assistant. Competing with Nuance/Microsoft DAX.", investors:"Venrock, Flare Capital, Google Ventures", target:"2027+" },
+  // ── PUBLICLY TRADED AI COMPANIES (REFERENCE) ──────────────────────────────
+  // ── ADDITIONAL HIGH-VALUE SHADOW PIPELINE ─────────────────────────────────
+  { id:123, name:"Gong", desc:"AI revenue intelligence; $7.25B; 4,000+ enterprise clients", layer:5, status:"shadow", valuation:7.25, signal:3, sector:"Sales Intelligence AI", advanced:true, watchpoints:"$7.25B valuation. AI sales coaching and deal intelligence. Long-awaited IPO.", investors:"Franklin Templeton, Tiger Global, Coatue, Sequoia", target:"2026" },
+  { id:124, name:"Mercor", desc:"AI contract staffing & expert training data; $2B; Jack Dorsey", layer:6, status:"shadow", valuation:2, signal:2, sector:"Future of Work AI", advanced:false, watchpoints:"$100M Series B at $2B. Jack Dorsey, Peter Thiel backed. AI-powered recruitment.", investors:"Felicis, Menlo Ventures, Jack Dorsey, Peter Thiel", target:"2027" },
+  { id:125, name:"Jasper AI", desc:"AI marketing platform; 1.8M MAU; enterprise content; unicorn", layer:6, status:"shadow", valuation:1.5, signal:2, sector:"Marketing AI", advanced:false, watchpoints:"$125M raise. Enterprise marketing workflows. Competing with OpenAI and Anthropic direct.", investors:"Insight Partners, Coatue, Bessemer", target:"2026–2027" },
+  { id:126, name:"Speak", desc:"AI-powered language learning; conversation AI tutor; $1B", layer:6, status:"shadow", valuation:1, signal:2, sector:"EdTech AI", advanced:false, watchpoints:"$165M raised at $1B. AI conversation partner for language learning. SoftBank-backed.", investors:"SoftBank Vision Fund, Y Combinator, Lachy Groom", target:"2027" },
+  { id:127, name:"Typeface", desc:"Enterprise AI content; brand-consistent; Salesforce + Google", layer:6, status:"shadow", valuation:1, signal:2, sector:"Enterprise Content AI", advanced:false, watchpoints:"$1B valuation. Salesforce and Google Cloud partner. Brand-controlled content AI.", investors:"Salesforce Ventures, Google Ventures, M12", target:"2027" },
+  { id:128, name:"Aisera", desc:"AI service management; IT and HR automation; $1.1B", layer:6, status:"shadow", valuation:1.1, signal:2, sector:"IT Service AI", advanced:false, watchpoints:"$1.1B valuation. GenAI for IT and HR service desks. ServiceNow competitor.", investors:"Thoma Bravo, True Ventures, Menlo Ventures", target:"2027" },
+  { id:129, name:"Forethought AI", desc:"AI customer support automation; $700M valuation; NEA", layer:6, status:"shadow", valuation:0.7, signal:2, sector:"Customer Support AI", advanced:false, watchpoints:"$700M valuation. AI support ticket resolution. Zendesk and Salesforce ecosystem.", investors:"NEA, Sound Ventures, Ford Foundation", target:"2027" },
+  { id:130, name:"AssemblyAI", desc:"AI speech and audio intelligence API; enterprise; $1.1B", layer:5, status:"shadow", valuation:1.1, signal:2, sector:"Speech AI", advanced:false, watchpoints:"$1.1B valuation. Speech-to-text and audio AI APIs. Enterprise developer tooling.", investors:"Addition, Accel, Y Combinator", target:"2027" },
+  { id:131, name:"Gamma", desc:"AI-powered presentations; fast-growing; $1B valuation; Accel", layer:6, status:"shadow", valuation:1, signal:2, sector:"Productivity AI", advanced:false, watchpoints:"Accel-backed. AI presentation generation. Fast-growing consumer and enterprise.", investors:"Accel", target:"2027" },
+  { id:132, name:"Pinecone", desc:"Vector database for AI; $750M; Menlo Ventures; RAG infra", layer:5, status:"shadow", valuation:0.75, signal:3, sector:"AI Database Infrastructure", advanced:false, watchpoints:"$750M valuation. Vector search for AI applications. RAG architecture.", investors:"Andreessen Horowitz, Menlo Ventures", target:"2027" },
+  { id:133, name:"Unstructured", desc:"AI document processing; ETL for LLMs; RAG prep; $750M", layer:5, status:"shadow", valuation:0.75, signal:3, sector:"AI Document AI", advanced:false, watchpoints:"$750M valuation. Converts PDFs and docs to LLM-ready format. Critical RAG infra.", investors:"Andreessen Horowitz, Pear VC", target:"2027" },
+  { id:134, name:"Labelbox", desc:"AI training data platform; enterprise labeling; $1B", layer:5, status:"shadow", valuation:1, signal:2, sector:"AI Training Data", advanced:false, watchpoints:"$1B valuation. AI data labeling and RLHF. Scale AI competitor.", investors:"Andreessen Horowitz, B Capital, Gradient Ventures", target:"2027" },
+  { id:135, name:"Snorkel AI", desc:"AI data labeling automation; programmatic; Stanford spinout", layer:5, status:"shadow", valuation:1, signal:2, sector:"AI Training Data", advanced:false, watchpoints:"$1B valuation. Programmatic data labeling. Stanford spinout.", investors:"Lightspeed, Greylock, Google Ventures", target:"2027" },
+  { id:136, name:"Groq (inference)", desc:"LPU chips; 500 tokens/sec; $2.8B; Tiger + BlackRock", layer:2, status:"shadow", valuation:2.8, signal:3, sector:"AI Inference Chips", advanced:true, watchpoints:"$2.8B valuation. Language Processing Unit = 5x faster inference. API-first go-to-market.", investors:"Tiger Global, BlackRock, Salesforce Ventures", target:"2026–2027" },
+  { id:137, name:"Descript", desc:"AI audio/video editing; podcasts and video creators; $550M", layer:6, status:"shadow", valuation:0.55, signal:2, sector:"AI Creative Tools", advanced:false, watchpoints:"$550M valuation. AI-powered transcription and video editing. Creator economy.", investors:"OpenAI, Andreessen Horowitz, Spark Capital", target:"2027" },
+  // ── FINAL EMERGING BATCH ─────────────────────────────────────────────────
+  { id:144, name:"Inflection AI (Pi)", desc:"Pi AI assistant; Mustafa Suleyman to Microsoft; restructuring", layer:4, status:"shadow", valuation:4, signal:2, sector:"Foundation AI", advanced:false, watchpoints:"Mustafa Suleyman moved to Microsoft. $4B raised. Restructuring as consumer AI.", investors:"Microsoft, NVIDIA, Bill Gates, Eric Schmidt", target:"2027+" },
+  { id:145, name:"SambaNova Systems", desc:"AI chip & DataScale platform; national AI centers; $5.1B", layer:2, status:"shadow", valuation:5.1, signal:3, sector:"AI Chip Systems", advanced:true, watchpoints:"$5.1B valuation. National AI research center deployments. Full-stack AI hardware + software.", investors:"SoftBank, Google, Intel Capital, GV", target:"2026–2027" },
+  { id:146, name:"Luminous Systems", desc:"AI photonic chips; in-memory computing; $900M", layer:2, status:"shadow", valuation:0.9, signal:2, sector:"Photonic AI Chips", advanced:false, watchpoints:"$900M valuation. Photonic computing for AI inference. Energy efficiency play.", investors:"Microsoft, Nvidia, Bill Gates, Paul Allen estate", target:"2027+" },
+  { id:147, name:"Skyryse", desc:"AI flight OS; semi-automated aviation; $1.1B; $300M Series C", layer:6, status:"shadow", valuation:1.1, signal:2, sector:"Aviation AI", advanced:false, watchpoints:"$300M Series C. Semi-automated flight OS. Safety pilot still required.", investors:"Moelis Asset Management", target:"2027" },
+  { id:148, name:"Turing", desc:"AI-matched engineering talent; $1.1B; deep vetting AI", layer:6, status:"shadow", valuation:1.1, signal:2, sector:"Future of Work AI", advanced:false, watchpoints:"$1.1B valuation. AI-powered engineer vetting. Remote work platform.", investors:"WestBridge Capital, Foundation Capital, Insight Partners", target:"2027" },
+  { id:149, name:"Mercor (talent AI)", desc:"AI contract staffing; $2B; Jack Dorsey + Peter Thiel backed", layer:6, status:"shadow", valuation:2, signal:2, sector:"Future of Work AI", advanced:false, watchpoints:"$100M Series B at $2B. AI expert training data marketplace.", investors:"Felicis, Menlo Ventures, Jack Dorsey, Peter Thiel", target:"2027" },
+  { id:150, name:"Paige AI", desc:"AI pathology; cancer detection; $400M; Microsoft partner", layer:6, status:"shadow", valuation:0.4, signal:2, sector:"Pathology AI", advanced:false, watchpoints:"AI-powered cancer pathology. Microsoft partnership. FDA cleared.", investors:"Microsoft, Tiger Global", target:"2027" },
+  { id:151, name:"Valo Health", desc:"AI drug discovery; human-centric drug design; Otsuka partner", layer:6, status:"shadow", valuation:1, signal:2, sector:"Drug Discovery AI", advanced:false, watchpoints:"$1B valuation. AI drug discovery platform. Otsuka and Google partnerships.", investors:"Foresite Capital, GV, SoftBank Vision Fund", target:"2027" },
+  { id:152, name:"Bright Machines", desc:"AI smart manufacturing automation; Microsoft-backed; $1.6B", layer:6, status:"shadow", valuation:1.6, signal:2, sector:"Manufacturing AI", advanced:true, watchpoints:"$1.6B valuation. AI-driven factory automation. Layer 6 manufacturing play.", investors:"Microsoft, Activate Capital, Eclipse Ventures", target:"2027" },
+  { id:153, name:"Sarcos Technology", desc:"AI exoskeleton robots for industrial workers; GE + Microsoft", layer:6, status:"shadow", valuation:0.5, signal:2, sector:"Industrial Exoskeleton AI", advanced:false, watchpoints:"AI-powered exoskeletons for warehouse workers. Industrial safety augmentation.", investors:"Caterpillar, General Electric, Microsoft", target:"2027+" },
+  { id:154, name:"Atomic Industries", desc:"AI-powered die casting for EVs and aerospace", layer:6, status:"shadow", valuation:0.2, signal:2, sector:"Manufacturing AI", advanced:false, watchpoints:"AI die casting precision. EV and aerospace parts. Early stage.", investors:"Khosla Ventures, Founders Fund", target:"2028+" },
+  { id:155, name:"Rebuy Engine", desc:"AI personalization for e-commerce; real-time recommendations", layer:6, status:"shadow", valuation:0.3, signal:2, sector:"E-commerce AI", advanced:false, watchpoints:"AI product recommendations. Shopify ecosystem. Early stage.", investors:"Y Combinator, Bessemer Venture Partners", target:"2027+" },
+  { id:156, name:"Profound", desc:"AI answer engine optimization (AEO); $1B; Sequoia + Lightspeed", layer:6, status:"shadow", valuation:1, signal:2, sector:"AI Search Marketing", advanced:false, watchpoints:"$96M Series C at $1B. AI search answer optimization. New category.", investors:"Sequoia Capital, Lightspeed Venture Partners", target:"2027" },
+  { id:157, name:"Atera", desc:"AI-powered IT management for MSPs; $2.5B valuation", layer:5, status:"shadow", valuation:2.5, signal:3, sector:"IT Management AI", advanced:false, watchpoints:"$2.5B valuation. AI IT management for MSPs. Growing managed service market.", investors:"General Atlantic, K1 Investment Management", target:"2027" },
+  { id:158, name:"Salesloft", desc:"AI sales engagement; $2.4B; Vista Equity PE-owned", layer:5, status:"shadow", valuation:2.4, signal:2, sector:"Sales AI Platform", advanced:false, watchpoints:"$2.4B valuation. Vista Equity PE ownership. AI sales engagement.", investors:"Vista Equity Partners (PE-owned)", target:"2026–2027" },
+  { id:159, name:"Observe.AI", desc:"AI contact center intelligence; quality assurance automation", layer:6, status:"shadow", valuation:0.9, signal:2, sector:"Contact Center AI", advanced:false, watchpoints:"AI conversation analytics for contact centers. Quality assurance automation.", investors:"Menlo Ventures, Scale Venture Partners", target:"2027" },
+  { id:160, name:"Gatik AI", desc:"Autonomous middle-mile delivery; Walmart, Loblaw contracts", layer:6, status:"shadow", valuation:1, signal:2, sector:"Autonomous Logistics AI", advanced:false, watchpoints:"Walmart Canada and Loblaw autonomous delivery routes. Middle-mile focus.", investors:"Emergence Capital, Tiger Global, Koch Disruptive Technologies", target:"2027" },
+  { id:161, name:"Nuro", desc:"Autonomous delivery robots; Google-backed; Kroger, Dominos", layer:6, status:"shadow", valuation:2, signal:2, sector:"Autonomous Delivery AI", advanced:false, watchpoints:"Google spinout. Dominos, Kroger partnerships. Down from $8.6B peak.", investors:"Google, SoftBank, Greylock Partners", target:"2027" },
+  { id:163, name:"Leena AI", desc:"AI HR automation; WorkLM; $100M+ ARR target; $800M", layer:6, status:"shadow", valuation:0.8, signal:2, sector:"HR Automation AI", advanced:false, watchpoints:"$800M valuation. AI HR service desk automation. Competing with Aisera.", investors:"Greycroft, Rockaway Capital", target:"2027+" },
+  { id:164, name:"Glean", desc:"Enterprise AI search; $4.6B; Fortune 500; Microsoft Copilot rival", layer:5, status:"shadow", valuation:4.6, signal:4, sector:"Enterprise AI Search", advanced:true, watchpoints:"$4.6B valuation. AI workplace search. $100M ARR. Direct Microsoft Copilot competitor.", investors:"Sequoia, Lightspeed, General Catalyst, ICONIQ Growth", target:"2026–2027" },
+  { id:165, name:"Hex Technologies", desc:"AI analytics notebooks; Jupyter replacement; $1.1B", layer:5, status:"shadow", valuation:1.1, signal:3, sector:"AI Analytics", advanced:false, watchpoints:"$1.1B valuation. AI-powered data notebooks. Replacing Jupyter and Mode.", investors:"Redpoint, Andreessen Horowitz, Sequoia", target:"2027" },
+  { id:166, name:"Vercel", desc:"Frontend cloud; Next.js; v0 AI tool; 11M+ devs; $3.25B", layer:3, status:"shadow", valuation:3.25, signal:3, sector:"AI Developer Platform", advanced:false, watchpoints:"$3.25B valuation. v0 AI design tool viral. Next.js standard for AI apps.", investors:"Accel, GV, Tiger Global, CRV", target:"2026–2027" },
+  { id:167, name:"Weights & Biases", desc:"AI training tracker; MLOps; $1.25B; NVIDIA partner", layer:5, status:"shadow", valuation:1.25, signal:3, sector:"MLOps Platform", advanced:false, watchpoints:"$1.25B valuation. Model training and experiment tracking. NVIDIA partnership.", investors:"Coatue, Insight Partners, NVentures, Sapphire", target:"2026–2027" },
+  { id:168, name:"Deepgram", desc:"AI speech recognition API; real-time transcription; $1.8B", layer:5, status:"shadow", valuation:1.8, signal:3, sector:"Speech AI", advanced:false, watchpoints:"$1.8B valuation. Real-time speech recognition. Enterprise voice AI infra.", investors:"Y Combinator, Tiger Global, BlackRock", target:"2027" },
+  { id:169, name:"Contextual AI", desc:"Enterprise RAG; grounded AI for regulated industries; $1.1B", layer:5, status:"shadow", valuation:1.1, signal:3, sector:"Enterprise RAG AI", advanced:false, watchpoints:"$1.1B valuation. RAG for finance, healthcare, legal. Reduces AI hallucination.", investors:"Andreessen Horowitz, Lightspeed Venture Partners", target:"2027" },
+  { id:170, name:"Orca Security", desc:"Agentless cloud security; AI threat detection; $1.8B", layer:5, status:"shadow", valuation:1.8, signal:3, sector:"Cloud Security AI", advanced:false, watchpoints:"$1.8B valuation. Agentless cloud security. AI threat detection multi-cloud.", investors:"ICONIQ, CapitalG, GGV Capital", target:"2026–2027" },
+  { id:171, name:"humans&", desc:"Human-AI collaboration lab; $4.5B seed; Georges Harik founder", layer:4, status:"shadow", valuation:4.5, signal:3, sector:"AI Research", advanced:false, watchpoints:"$480M seed at $4.5B. Largest AI collaboration seed. Human augmentation thesis.", investors:"SV Angel, Georges Harik, Andreessen Horowitz", target:"2028+" },
+  { id:172, name:"Flapping Airplanes", desc:"AI research lab; $1.5B seed; Index + GV; founded 2025", layer:4, status:"shadow", valuation:1.5, signal:2, sector:"AI Research", advanced:false, watchpoints:"$180M seed at $1.5B. Founded 2025. Index and GV backed. Very early.", investors:"Index Ventures, GV (Google Ventures)", target:"2028+" },
+  { id:173, name:"Weaviate", desc:"AI-native vector database; RAG infra; $2.25B; Index Ventures", layer:5, status:"shadow", valuation:2.25, signal:3, sector:"AI Database Infrastructure", advanced:true, watchpoints:"$2.25B valuation. Vector database for AI retrieval. RAG backbone. OpenAI ecosystem.", investors:"Index Ventures, Salesforce Ventures, Bloomberg Beta", target:"2026–2027" },
+  { id:174, name:"Upscale AI", desc:"AI infrastructure; $1B valuation; Tiger Global; founded 2025", layer:3, status:"shadow", valuation:1, signal:2, sector:"AI Infrastructure", advanced:false, watchpoints:"Founded 2025. $200M Series A. $1B valuation. Tiger Global backed.", investors:"Tiger Global Management, Xora Innovation", target:"2027+" },
+  { id:175, name:"Render", desc:"Cloud hosting for AI apps; $1.5B; General Catalyst backed", layer:3, status:"shadow", valuation:1.5, signal:3, sector:"AI App Hosting", advanced:false, watchpoints:"$1.5B. $100M Series C1. TC Battlefield winner. Agentic AI workloads.", investors:"General Catalyst, Bessemer Venture Partners", target:"2026–2027" },
+  { id:176, name:"Cohere", desc:"Enterprise LLMs; sovereign AI; $7B; Oracle, Dell, RBC clients", layer:4, status:"shadow", valuation:7, signal:4, sector:"Enterprise AI", advanced:false, watchpoints:"$240M ARR. CEO expressed IPO interest. Enterprise-only. Sovereign AI tailwind.", investors:"Nvidia, AMD, Salesforce Ventures, Inovia Capital", target:"2026" },
+  { id:177, name:"Gong (revenue intel)", desc:"AI revenue intelligence; $7.25B; conversation analytics", layer:5, status:"shadow", valuation:7.25, signal:3, sector:"Sales Intelligence AI", advanced:true, watchpoints:"$7.25B. AI sales coaching. 4,000+ enterprise clients. Long-awaited IPO.", investors:"Franklin Templeton, Tiger Global, Coatue, Sequoia", target:"2026" },
+  { id:178, name:"Salesloft", desc:"AI sales engagement; Vista Equity PE; $2.4B valuation", layer:5, status:"shadow", valuation:2.4, signal:2, sector:"Sales AI Platform", advanced:false, watchpoints:"$2.4B. Vista PE ownership. AI sales engagement competing with Outreach.", investors:"Vista Equity Partners", target:"2026–2027" },
+  { id:179, name:"Outreach", desc:"AI sales execution platform; $4.4B; Sands Capital", layer:5, status:"shadow", valuation:4.4, signal:3, sector:"Sales AI Platform", advanced:false, watchpoints:"$4.4B. AI sales sequencing and analytics. Competing with Salesloft.", investors:"Sands Capital, Tiger Global, DFJ Growth", target:"2026–2027" },
+  { id:180, name:"Highspot", desc:"AI sales enablement; $3.5B; Microsoft + Salesforce integrations", layer:5, status:"shadow", valuation:3.5, signal:3, sector:"Sales Enablement AI", advanced:false, watchpoints:"$3.5B. AI content for sales teams. ICONIQ, Tiger Global backed.", investors:"ICONIQ, Tiger Global, Madrona Venture Group", target:"2027" },
+  { id:181, name:"Aleph Alpha", desc:"European sovereign AI; German government AI contracts; $500M", layer:4, status:"shadow", valuation:0.5, signal:2, sector:"Sovereign AI (Europe)", advanced:false, watchpoints:"German government AI contracts. SAP, Bosch, Schwarz Group backed. EU sovereign AI.", investors:"Bosch, SAP, Schwarz Group, Andreas Reckwitz", target:"2027+" },
+  { id:182, name:"Atera", desc:"AI IT management for MSPs; $2.5B; General Atlantic backed", layer:5, status:"shadow", valuation:2.5, signal:3, sector:"IT Management AI", advanced:false, watchpoints:"$2.5B valuation. AI IT management for managed service providers.", investors:"General Atlantic, K1 Investment Management", target:"2027" },
+  { id:183, name:"Modular AI", desc:"AI compiler infrastructure; MLIR; Mojo language creator", layer:5, status:"shadow", valuation:1.4, signal:3, sector:"AI Developer Tools", advanced:false, watchpoints:"$1.4B valuation. Mojo programming language. AI hardware abstraction layer.", investors:"General Catalyst, Greylock, GV", target:"2027" },
+  { id:184, name:"Neon", desc:"Serverless Postgres for AI applications; $700M valuation", layer:3, status:"shadow", valuation:0.7, signal:2, sector:"AI Database Infrastructure", advanced:false, watchpoints:"$700M valuation. Serverless Postgres. AI application database of choice.", investors:"General Catalyst, Khosla Ventures", target:"2027+" },
+  { id:186, name:"Shield AI (repeat)", desc:"Autonomous military AI; Hivemind; $12.7B; USAF CCA", layer:5, status:"shadow", valuation:12.7, signal:4, sector:"Defense AI Platform", advanced:true, watchpoints:"$1.5B Series G. Hivemind AI for USAF. DoD AI program of record.", investors:"Advent International, JPMorgan, Blackstone Preferred", target:"2026–2027" },
+];
+const uniqueData = IPO_DATA.filter((d, idx, arr) =>
+  arr.findIndex(x => x.name === d.name) === idx
+);
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let activeLayerFilter = 'all';
+let activeStatusFilter = 'all';
+let activeSortBy = 'signal';
+let searchQuery = '';
+let watchlist = new Set();
+let selectedId = null;
+let insightCache = {};
+
+
+function initTicker() {
+  const items = uniqueData.filter(d => d.signal >= 4).slice(0, 20);
+  const tape = items.map(d =>
+    `<span class="ticker-item">${d.name} <span>$${d.valuation >= 100 ? (d.valuation/1000).toFixed(1)+'T' : d.valuation+'B'}</span> · ${d.sector}</span>`
+  ).join('');
+  const el = document.getElementById('ticker-inner');
+  el.innerHTML = tape + tape;
+}
+
+// ─── RENDER ───────────────────────────────────────────────────────────────────
+function getLayerLabel(l) {
+  const labels = {1:'L1 · Energy', 2:'L2 · Chips', 3:'L3 · Infra', 4:'L4 · Models', 5:'L5 · Software', 6:'L6 · Apps'};
+  return labels[l] || 'L?';
+}
+
+function formatVal(v) {
+  if (v >= 1000) return '$' + (v/1000).toFixed(1) + 'T';
+  if (v >= 1) return '$' + v + 'B';
+  return '$' + (v * 1000) + 'M';
+}
+
+function signalDots(n) {
+  let html = '<div class="signal-dots">';
+  for (let i = 1; i <= 5; i++) html += `<div class="signal-dot${i <= n ? ' lit' : ''}"></div>`;
+  return html + '</div>';
+}
+
+function statusBadge(s) {
+  const map = {
+    filed: ['status-filed', 'S-1 FILED'],
+    confidential: ['status-confidential', 'CONFIDENTIAL'],
+    shadow: ['status-shadow', 'SHADOW PIPELINE'],
+    withdrew: ['status-withdrew', 'WITHDREW']
+  };
+  const [cls, label] = map[s] || ['', s];
+  return `<span class="status-badge ${cls}">${label}</span>`;
+}
+
+function renderTable() {
+  let data = [...uniqueData];
+
+  if (searchQuery) {
+    const q = searchQuery.toLowerCase();
+    data = data.filter(d =>
+      d.name.toLowerCase().includes(q) ||
+      d.desc.toLowerCase().includes(q) ||
+      d.sector.toLowerCase().includes(q)
+    );
+  }
+
+  if (activeLayerFilter !== 'all') {
+    data = data.filter(d => d.layer == activeLayerFilter);
+  }
+
+  if (activeStatusFilter !== 'all') {
+    data = data.filter(d => d.status === activeStatusFilter);
+  }
+
+  // Sort
+  if (activeSortBy === 'signal') data.sort((a,b) => b.signal - a.signal);
+  else if (activeSortBy === 'valuation') data.sort((a,b) => b.valuation - a.valuation);
+  else if (activeSortBy === 'alpha') data.sort((a,b) => a.name.localeCompare(b.name));
+  else if (activeSortBy === 'layer') data.sort((a,b) => a.layer - b.layer);
+
+  const tbody = document.getElementById('table-body');
+  document.getElementById('showing-count').textContent = data.length;
+
+  if (data.length === 0) {
+    tbody.innerHTML = '';
+    document.getElementById('empty-state').style.display = 'block';
+    document.getElementById('table-container').style.display = 'none';
+    return;
+  }
+
+  document.getElementById('empty-state').style.display = 'none';
+  document.getElementById('table-container').style.display = 'block';
+
+  const isMega = v => v >= 20;
+
+  tbody.innerHTML = data.map(d => `
+    <tr class="data-row fade-in${selectedId === d.id ? ' selected' : ''}" onclick="openPanel(${d.id})">
+      <td>
+        <div class="company-name">${d.name}</div>
+        <div class="company-desc">${d.desc}</div>
+      </td>
+      <td><span class="layer-badge layer-${d.layer}">${getLayerLabel(d.layer)}</span></td>
+      <td>${statusBadge(d.status)}</td>
+      <td><span class="valuation-text${isMega(d.valuation) ? ' mega' : ''}">${formatVal(d.valuation)}</span></td>
+      <td>${signalDots(d.signal)}</td>
+      <td>${d.advanced ? '<span class="advanced-badge">ADVANCED</span>' : '<span style="color:var(--muted);font-size:11px;">—</span>'}</td>
+      <td>
+        <button class="watchlist-btn${watchlist.has(d.id) ? ' saved' : ''}" onclick="toggleWatch(event,${d.id})">
+          ${watchlist.has(d.id) ? '★' : '☆'}
+        </button>
+      </td>
+    </tr>
+  `).join('');
+
+  updateWatchlistCount();
+}
+
+function updateWatchlistCount() {
+  const c = watchlist.size;
+  document.getElementById('watchlist-header-count').textContent = c;
+  document.getElementById('watchlist-sidebar-count').textContent = c;
+}
+
+// ─── PANEL ────────────────────────────────────────────────────────────────────
+function openPanel(id) {
+  const d = uniqueData.find(x => x.id === id);
+  if (!d) return;
+  selectedId = id;
+
+  document.getElementById('panel-name').textContent = d.name;
+  document.getElementById('panel-tagline').textContent = d.desc;
+
+  document.getElementById('panel-meta').innerHTML = `
+    <span class="layer-badge layer-${d.layer}">${getLayerLabel(d.layer)}</span>
+    ${statusBadge(d.status)}
+    ${d.advanced ? '<span class="advanced-badge">ADV. SCREENING</span>' : ''}
+  `;
+
+  document.getElementById('panel-data-grid').innerHTML = `
+    <div class="data-cell">
+      <div class="data-cell-label">Est. Valuation</div>
+      <div class="data-cell-val gold">${formatVal(d.valuation)}</div>
+    </div>
+    <div class="data-cell">
+      <div class="data-cell-label">Expected Timeline</div>
+      <div class="data-cell-val">${d.target}</div>
+    </div>
+    <div class="data-cell">
+      <div class="data-cell-label">Sector</div>
+      <div class="data-cell-val">${d.sector}</div>
+    </div>
+    <div class="data-cell">
+      <div class="data-cell-label">Signal Strength</div>
+      <div class="data-cell-val">${signalDots(d.signal)}</div>
+    </div>
+    <div class="data-cell" style="grid-column: 1/-1;">
+      <div class="data-cell-label">Key Investors</div>
+      <div class="data-cell-val" style="font-size:12px;">${d.investors}</div>
+    </div>
+  `;
+
+  document.getElementById('panel-watchpoints').innerHTML = d.watchpoints
+    .split('. ')
+    .filter(s => s.trim())
+    .map(s => `<div style="margin-bottom:6px;">◆ ${s.trim()}${s.endsWith('.') ? '' : '.'}</div>`)
+    .join('');
+
+  // Reset AI insight
+  if (insightCache[id]) {
+    document.getElementById('ai-insight-text').classList.remove('loading');
+    document.getElementById('ai-insight-text').innerHTML = insightCache[id];
+    document.getElementById('generate-btn').textContent = '↺ Regenerate Brief';
+    document.getElementById('generate-btn').disabled = false;
+  } else {
+    document.getElementById('ai-insight-text').classList.add('loading');
+    document.getElementById('ai-insight-text').innerHTML = 'Click "Generate Brief" for AI-powered investment analysis within the Atlas 6-Layer Pyramid framework.';
+    document.getElementById('generate-btn').textContent = '◆ Generate Investment Brief';
+    document.getElementById('generate-btn').disabled = false;
+  }
+
+  document.getElementById('detail-panel').classList.add('open');
+  renderTable();
+}
+
+function closePanel() {
+  document.getElementById('detail-panel').classList.remove('open');
+  selectedId = null;
+  renderTable();
+}
+
+// ─── AI INSIGHT ───────────────────────────────────────────────────────────────
+async function generateInsight() {
+  const d = uniqueData.find(x => x.id === selectedId);
+  if (!d) return;
+
+  const btn = document.getElementById('generate-btn');
+  const textEl = document.getElementById('ai-insight-text');
+
+  btn.disabled = true;
+  btn.textContent = '⟳ Generating...';
+  textEl.classList.remove('loading');
+  textEl.innerHTML = '<span class="ai-streaming"></span>';
+
+  const layerNames = {1:'Layer 1 (Energy & Power)', 2:'Layer 2 (Chips & Hardware)', 3:'Layer 3 (Data Centers & Infrastructure)', 4:'Layer 4 (Foundation Model Companies)', 5:'Layer 5 (Software Infrastructure)', 6:'Layer 6 (Apps & Services — highest asymmetric upside)'};
+
+  const prompt = `You are a senior AI investment analyst at Keystone Atlas, an elite AI investing research firm. You speak with authority and conviction. Write a concise 150-word investment brief for ${d.name} (${d.desc}).
+
+Key facts: Valuation ~${formatVal(d.valuation)}, Status: ${d.status}, Layer: ${layerNames[d.layer]}, Sector: ${d.sector}, Target: ${d.target}.
+
+Frame the analysis around the Atlas 6-Layer AI Pyramid. Specifically: why this company matters within ${layerNames[d.layer]}, what makes it a compelling pre-IPO opportunity, and what the key risk/upside asymmetry is. Be specific and direct. Do NOT use generic AI language. Write like an analyst who has done the research. End with one sentence on what could unlock 2-5x from IPO price.`;
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        stream: true,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    if (!response.ok) throw new Error('API error');
+
+    textEl.innerHTML = '';
+    let fullText = '';
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      const chunk = decoder.decode(value);
+      const lines = chunk.split('\n');
+
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          const data = line.slice(6);
+          if (data === '[DONE]') break;
+          try {
+            const parsed = JSON.parse(data);
+            if (parsed.type === 'content_block_delta' && parsed.delta?.text) {
+              fullText += parsed.delta.text;
+              textEl.innerHTML = fullText + '<span class="ai-streaming"></span>';
+            }
+          } catch(e) {}
+        }
+      }
+    }
+
+    textEl.innerHTML = fullText;
+    insightCache[selectedId] = fullText;
+    btn.textContent = '↺ Regenerate Brief';
+    btn.disabled = false;
+
+  } catch(err) {
+    textEl.innerHTML = `<span style="color:var(--red)">Unable to generate brief. Please try again.</span>`;
+    btn.textContent = '◆ Retry';
+    btn.disabled = false;
+  }
+}
+
+// ─── WATCHLIST ────────────────────────────────────────────────────────────────
+function toggleWatch(e, id) {
+  e.stopPropagation();
+  if (watchlist.has(id)) watchlist.delete(id);
+  else watchlist.add(id);
+  renderTable();
+}
+
+function exportWatchlist() {
+  const watched = uniqueData.filter(d => watchlist.has(d.id));
+  if (watched.length === 0) { alert('No companies in your watchlist yet.'); return; }
+  const csv = ['Company,Layer,Status,Valuation,Signal,Sector,Timeline,Investors']
+    .concat(watched.map(d =>
+      `"${d.name}","${getLayerLabel(d.layer)}","${d.status}","${formatVal(d.valuation)}","${d.signal}/5","${d.sector}","${d.target}","${d.investors}"`
+    )).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'atlas_ipo_watchlist.csv';
+  a.click();
+}
+
+// ─── FILTERS & CONTROLS ──────────────────────────────────────────────────────
+document.querySelectorAll('[data-filter="layer"]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-filter="layer"]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeLayerFilter = btn.dataset.val;
+    renderTable();
+  });
+});
+
+document.querySelectorAll('[data-filter="status"]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-filter="status"]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeStatusFilter = btn.dataset.val;
+    renderTable();
+  });
+});
+
+document.getElementById('sort-select').addEventListener('change', e => {
+  activeSortBy = e.target.value;
+  renderTable();
+});
+
+document.getElementById('search-input').addEventListener('input', e => {
+  searchQuery = e.target.value.trim();
+  renderTable();
+});
+
+document.getElementById('panel-close').addEventListener('click', closePanel);
+document.getElementById('export-watchlist').addEventListener('click', exportWatchlist);
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+initTicker();
+renderTable();
+document.getElementById('total-count').textContent = uniqueData.length + '+';
+</script>
+</body>
+</html>
