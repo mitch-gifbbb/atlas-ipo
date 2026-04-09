@@ -678,6 +678,45 @@
     color: var(--text);
     font-style: italic;
   }
+  /* STATUS GLOSSARY */
+  .status-glossary {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding: 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+  }
+
+  .gloss-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .gloss-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+
+  .gloss-term {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--text);
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+  }
+
+  .gloss-def {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: var(--border); }
@@ -777,6 +816,31 @@
 
     <div class="sidebar-section">
       <div class="sidebar-label">Filing Status</div>
+
+      <div class="status-glossary">
+        <div class="gloss-item">
+          <span class="gloss-dot" style="background:#4CAF78"></span>
+          <div>
+            <div class="gloss-term">S-1 Filed</div>
+            <div class="gloss-def">Paperwork submitted to the SEC. IPO is imminent.</div>
+          </div>
+        </div>
+        <div class="gloss-item">
+          <span class="gloss-dot" style="background:#C9A84C"></span>
+          <div>
+            <div class="gloss-term">Confidential</div>
+            <div class="gloss-def">Reported to have filed privately with the SEC based on institutional sources. Filing not yet publicly visible.</div>
+          </div>
+        </div>
+        <div class="gloss-item">
+          <span class="gloss-dot" style="background:#5B8BDE"></span>
+          <div>
+            <div class="gloss-term">Shadow Pipeline</div>
+            <div class="gloss-def">No filing yet, but actively preparing. The earliest stage intel.</div>
+          </div>
+        </div>
+      </div>
+
       <div class="filter-group" id="status-filters">
         <button class="filter-chip active" data-filter="status" data-val="all">All Status</button>
         <button class="filter-chip" data-filter="status" data-val="filed">
